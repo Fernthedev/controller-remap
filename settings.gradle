@@ -1,0 +1,3 @@
+rootProject.name = 'controller-remap'
+include 'mod-1-13-x'
+include 'mod-core'

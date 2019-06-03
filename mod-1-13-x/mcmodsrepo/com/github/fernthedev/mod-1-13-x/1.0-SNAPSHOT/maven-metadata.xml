@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>com.github.fernthedev</groupId>
+  <artifactId>mod-1-13-x</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <timestamp>20190601.014518</timestamp>
+      <buildNumber>1</buildNumber>
+    </snapshot>
+    <lastUpdated>20190601014518</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>jar</extension>
+        <value>1.0-20190601.014518-1</value>
+        <updated>20190601014518</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>1.0-20190601.014518-1</value>
+        <updated>20190601014518</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+</metadata>
