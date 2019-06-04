@@ -75,8 +75,10 @@ configurations {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.13.2-25.0.218'
-    shade project(':mod-core')
+    minecraft 'net.minecraftforge:forge:1.13.2-25.0.219'
+    shade(project(':mod-core')) {
+        exclude module: 'forgeSrc'
+    }
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

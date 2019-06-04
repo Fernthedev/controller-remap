@@ -1,8 +1,11 @@
 package com.github.fernthedev.controllerremapmod.core;
 
+import com.github.fernthedev.controllerremapmod.config.IConfigHandler;
+import com.github.fernthedev.controllerremapmod.config.SettingsConfigBase;
 import com.github.fernthedev.controllerremapmod.core.joystick.ControllerButtonState;
 import com.github.fernthedev.controllerremapmod.core.joystick.ControllerButtons;
 import com.github.fernthedev.controllerremapmod.core.joystick.JoystickController;
+import lombok.Getter;
 import net.minecraft.util.MovementInput;
 import org.apache.logging.log4j.Logger;
 
@@ -10,14 +13,25 @@ import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 
 public class ControllerHandler {
 
-    private static JoystickController controller = new JoystickController(0);
+    private static JoystickController controller;
+
+    @Getter
     private static IHandler handler;
+
+    @Getter
+    private static IConfigHandler configHandler;
 
 
     public static void setHandler(IHandler newHandler) {
         if(handler == null) {
             handler = newHandler;
             handler.setControllerHandler(new ControllerHandler());
+
+            configHandler = handler.getConfigHandler();
+
+            handler.getLogger().debug("The controller mapping is " + configHandler.getSettings());
+
+            controller = new JoystickController(0,configHandler.getSettings().getSelectedMapping());
         }else{
             throw new IllegalStateException("Handler has been set already");
         }
@@ -341,4 +355,9 @@ public class ControllerHandler {
         return value > max || value < min;
     }
 
+    public void updateSettings(SettingsConfigBase settingsConfigBase) {
+
+        multiplier = settingsConfigBase.getSensitivity();
+
+    }
 }

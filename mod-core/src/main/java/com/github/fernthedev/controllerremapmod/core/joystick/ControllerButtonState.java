@@ -1,8 +1,6 @@
 package com.github.fernthedev.controllerremapmod.core.joystick;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Data
 @Setter

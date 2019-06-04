@@ -1,5 +1,7 @@
 package com.github.fernthedev.controllerremapmod;
 
+import com.github.fernthedev.controllerremapmod.config.ConfigHandler;
+import com.github.fernthedev.controllerremapmod.config.IConfigHandler;
 import com.github.fernthedev.controllerremapmod.core.ControllerHandler;
 import com.github.fernthedev.controllerremapmod.core.IHandler;
 import lombok.Getter;
@@ -12,22 +14,31 @@ import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod("controller-remap")
+@Mod(ControllerRemapModMain.MODID)
 public class ControllerRemapModMain implements IHandler {
     // Directly reference a log4j logger.
     private static final Logger logger = LogManager.getLogger();
+
+    private ConfigHandler configHandler;
+
+    static final String MODID = "controller-remap";
+
     private static Class<? extends Minecraft> minecraftClass;
 
     private Method clickMethod;
@@ -39,7 +50,6 @@ public class ControllerRemapModMain implements IHandler {
 
 
     public ControllerRemapModMain() {
-        ControllerHandler.setHandler(this);
         // Register the setup method for modloading
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         // Register the enqueueIMC method for modloading
@@ -53,6 +63,9 @@ public class ControllerRemapModMain implements IHandler {
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(new MyEventHandler(this));
+
+
+
     }
 
     /**
@@ -61,12 +74,12 @@ public class ControllerRemapModMain implements IHandler {
     private void setup(final FMLCommonSetupEvent e) {
         // some preinit code
         minecraftClass = Minecraft.getInstance().getClass();
-
-
+        ControllerHandler.setHandler(this);
+        final ModLoadingContext modLoadingContext = ModLoadingContext.get();
+        modLoadingContext.registerConfig(ModConfig.Type.CLIENT,ConfigHandler.CLIENT_SPEC);
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {
-
         // do something that can only be done on the client
         logger.info("Got game settings {}", event.getMinecraftSupplier().get().gameSettings);
     }
@@ -184,5 +197,29 @@ public class ControllerRemapModMain implements IHandler {
     @Override
     public void printChat(String s) {
         Minecraft.getInstance().player.sendChatMessage(s);
+    }
+
+    @Override
+    public String getModID() {
+        return MODID;
+    }
+
+    @Override
+    public File getConfigDir() {
+        return null;
+    }
+
+
+    @Override
+    public IConfigHandler getConfigHandler() {
+        if(configHandler == null) {
+            configHandler = new ConfigHandler();
+        }
+        return configHandler;
+    }
+
+    @Override
+    public ModContainer getModContainer() {
+        return ModLoadingContext.get().getActiveContainer();
     }
 }

@@ -1,6 +1,9 @@
 package com.github.fernthedev.controllerremapmod.core;
 
+import com.github.fernthedev.controllerremapmod.config.IConfigHandler;
 import org.apache.logging.log4j.Logger;
+
+import java.io.File;
 
 public interface IHandler {
 
@@ -27,4 +30,12 @@ public interface IHandler {
     void openMainMenu();
 
     void printChat(String s);
+
+    String getModID();
+
+    File getConfigDir();
+
+    IConfigHandler getConfigHandler();
+
+    Object getModContainer();
 }
