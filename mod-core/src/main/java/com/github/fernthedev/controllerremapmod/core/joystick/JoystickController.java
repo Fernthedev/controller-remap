@@ -1,10 +1,7 @@
 package com.github.fernthedev.controllerremapmod.core.joystick;
 
 import com.github.fernthedev.controllerremapmod.mappings.Mapping;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -20,6 +17,7 @@ public class JoystickController {
     public final int controllerIndex;
 
     @Getter
+    @Setter
     @NonNull
     private Mapping mapping;
 

@@ -44,6 +44,18 @@ public class ConfigHandler extends IConfigHandler {
         if(main == null) throw new RuntimeException("Not null");
     }
 
+    @Override
+    public void sync() {
+        settingsConfig.getModConfig().save();
+
+
+    }
+
+    @Override
+    protected void load() {
+        super.load();
+    }
+
     public static ConfigHandler registerSpec() {
         final Pair<ConfigHandler, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(ConfigHandler::new);
         CLIENT_SPEC = specPair.getRight();

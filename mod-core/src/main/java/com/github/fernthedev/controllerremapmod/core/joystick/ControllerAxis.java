@@ -21,41 +21,50 @@ public class ControllerAxis {
      * -1 IS LEFT
      * 0 IS STATELESS
      */
-    private ControllerAxisState HORIZONTAL_LEFT_STICKER = new ControllerAxisState(mapping.getAxesMapping().getHORIZONTAL_LEFT_STICKER());
+    private ControllerAxisState HORIZONTAL_LEFT_STICKER;
 
     /**
      * -1 IS DOWN
      * 1 IS UP
      * 0 IS STATELESS
      */
-    private ControllerAxisState VERTICAL_LEFT_STICKER = new ControllerAxisState(mapping.getAxesMapping().getVERTICAL_LEFT_STICKER());
+    private ControllerAxisState VERTICAL_LEFT_STICKER;
 
     /**
      * 1 IS RIGHT
      * -1 IS LEFT
      * 0 IS STATELESS
      */
-    private ControllerAxisState VERTICAL_RIGHT_STICKER = new ControllerAxisState(mapping.getAxesMapping().getVERTICAL_RIGHT_STICKER());
+    private ControllerAxisState VERTICAL_RIGHT_STICKER;
 
     /**
      * -1 IS DOWN
      * 1 IS UP
      * 0 IS STATELESS
      */
-    private ControllerAxisState HORIZONTAL_RIGHT_STICKER = new ControllerAxisState(mapping.getAxesMapping().getHORIZONTAL_RIGHT_STICKER());
+    private ControllerAxisState HORIZONTAL_RIGHT_STICKER;
 
     /**
      * -1 is default
      * 1 is trigger
      */
-    private ControllerAxisState LEFT_TRIGGER = new ControllerAxisState(mapping.getAxesMapping().getLEFT_TRIGGER());
+    private ControllerAxisState LEFT_TRIGGER;
 
     /**
      * 0 is default
      * 1 is trigger
      */
-    private ControllerAxisState RIGHT_TRIGGER = new ControllerAxisState(mapping.getAxesMapping().getRIGHT_TRIGGER());
+    private ControllerAxisState RIGHT_TRIGGER;
 
+
+    private void build() {
+        HORIZONTAL_LEFT_STICKER = new ControllerAxisState(mapping.getAxesMapping().getHORIZONTAL_LEFT_STICKER());
+        VERTICAL_LEFT_STICKER = new ControllerAxisState(mapping.getAxesMapping().getVERTICAL_LEFT_STICKER());
+        VERTICAL_RIGHT_STICKER = new ControllerAxisState(mapping.getAxesMapping().getVERTICAL_RIGHT_STICKER());
+        HORIZONTAL_RIGHT_STICKER = new ControllerAxisState(mapping.getAxesMapping().getHORIZONTAL_RIGHT_STICKER());
+        LEFT_TRIGGER = new ControllerAxisState(mapping.getAxesMapping().getLEFT_TRIGGER());
+        RIGHT_TRIGGER = new ControllerAxisState(mapping.getAxesMapping().getRIGHT_TRIGGER());
+    }
 
     /**
      * Gets an instance of {@link ControllerAxis} for the controller specified
@@ -65,6 +74,7 @@ public class ControllerAxis {
      */
     public static ControllerAxis getAxis(int controllerIndex, @NonNull Mapping mapping) {
         ControllerAxis controllerAxis = new ControllerAxis(mapping);
+        controllerAxis.build();
 
         FloatBuffer axes = glfwGetJoystickAxes(controllerIndex);
 

@@ -3,7 +3,7 @@ package com.github.fernthedev.controllerremapmod.core;
 import com.github.fernthedev.controllerremapmod.config.IConfigHandler;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
+import java.nio.file.Path;
 
 public interface IHandler {
 
@@ -33,7 +33,7 @@ public interface IHandler {
 
     String getModID();
 
-    File getConfigDir();
+    Path getConfigDir();
 
     IConfigHandler getConfigHandler();
 

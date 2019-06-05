@@ -63,8 +63,6 @@ public class ControllerHandler {
     private int leftClickPressTimeHeld;
     private int rightClickPressTimeHeld;
 
-    private double multiplier = 1.2; //TODO: Will be changed to sensitivity and will add a menu for changing this value
-
     private boolean sneakToggleButton;
 
     private double leftDeadzone = 0.3;
@@ -72,6 +70,9 @@ public class ControllerHandler {
 
     public void moveEvent(MovementInput event,IControlPlayer player) {
         glfwPollEvents();
+        if(!controller.isConnected()) return;
+
+        updateSettings();
 
         if(oldMoveButtons == null) {
             oldMoveButtons = controller.getButtons();
@@ -256,13 +257,15 @@ public class ControllerHandler {
 
             double deadzoneAmount = 0.3;
 
+
+
             //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationPitch += controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue();)
             if(deadzone(controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue(),-deadzoneAmount,deadzoneAmount))
-                player.addRotationPitch((float) (controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue() * multiplier)); // -1 is down, 1 is up, 0 is stateless
+                player.addRotationPitch((float) (controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue() * updateSettings().getSensitivity())); // -1 is down, 1 is up, 0 is stateless
 
             if(deadzone(controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue(),-deadzoneAmount,deadzoneAmount))
                 //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationYaw += controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue();)
-                player.addRotationYaw((float) (controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue() * multiplier)); // -1 IS DOWN, 1 IS UP, 0 IS STATELESS
+                player.addRotationYaw((float) (controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue() *  updateSettings().getSensitivity())); // -1 IS DOWN, 1 IS UP, 0 IS STATELESS
 
         }
     }
@@ -271,6 +274,10 @@ public class ControllerHandler {
 
     public void updateTick(IControlPlayer player) {
         glfwPollEvents();
+        if(!controller.isConnected()) return;
+
+        updateSettings();
+
         if(oldButtons == null) {
             oldButtons = controller.getButtons();
         }
@@ -338,6 +345,8 @@ public class ControllerHandler {
             rightClickTimeDelay--;
         }
 
+
+
         oldButtons = controller.getButtons();
     }
 
@@ -355,9 +364,8 @@ public class ControllerHandler {
         return value > max || value < min;
     }
 
-    public void updateSettings(SettingsConfigBase settingsConfigBase) {
-
-        multiplier = settingsConfigBase.getSensitivity();
-
+    private SettingsConfigBase updateSettings() {
+        controller.setMapping(handler.getConfigHandler().getSettings().getSelectedMapping());
+        return handler.getConfigHandler().getSettings();
     }
 }

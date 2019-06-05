@@ -4,12 +4,14 @@ import com.github.fernthedev.controllerremapmod.core.ControllerHandler;
 import com.github.fernthedev.controllerremapmod.mappings.Mapping;
 import com.github.fernthedev.controllerremapmod.mappings.xbox.XboxOneMapping;
 import com.google.gson.Gson;
+import lombok.Getter;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.commons.lang3.tuple.Pair;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,15 +25,30 @@ public class TomlSettingsConfig extends SettingsConfigBase {
 
     private List<ForgeConfigSpec.ConfigValue<String>> mappingListConfig;
 
+    @Getter
+    private ModConfig modConfig;
+
+
+
     public void build(ForgeConfigSpec.Builder builder) {
         load(builder);
+
+        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        modEventBus.addListener((ModConfig.ModConfigEvent event) -> {
+            new RuntimeException("Got config " + event.getConfig() + " name " + event.getConfig().getModId() + ":" + event.getConfig().getFileName());
+            final ModConfig config = event.getConfig();
+            if (config.getSpec() == ConfigHandler.getCLIENT_SPEC()) {
+                parseFromConfig(config);
+            }
+        });
+
     }
 
     private void loadDirectoryMappings() {
 
 
         ControllerHandler.getHandler().getLogger().info("The directory is " + ControllerHandler.getHandler().getConfigDir());
-        File dir = ControllerHandler.getHandler().getConfigDir();
+        File dir = ControllerHandler.getHandler().getConfigDir().toFile();
 
         loadedMappings = new ArrayList<>();
 
@@ -82,7 +99,9 @@ public class TomlSettingsConfig extends SettingsConfigBase {
 
 
     @Override
-    public void parseFromConfig(@Nullable Object configObject) {
+    public void parseFromConfig(Object configObject) {
+
+        this.modConfig = (ModConfig) configObject;
 
         sensitivity = sensitivityConfig.get();
 
@@ -99,6 +118,18 @@ public class TomlSettingsConfig extends SettingsConfigBase {
 
     }
 
+    public void setAndSave(String path, Object value) {
+        modConfig.getConfigData().set(path,value);
+        modConfig.save();
+    }
+
+    public Object getIfNonNull(String path, Object defVal) {
+        if(modConfig.getConfigData().get(path) == null) {
+            setAndSave(path,defVal);
+            return defVal;
+        }
+        return modConfig.getConfigData().get(path);
+    }
 
 
     private class MappingReader {

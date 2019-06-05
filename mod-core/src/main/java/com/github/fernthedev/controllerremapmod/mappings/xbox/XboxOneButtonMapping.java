@@ -1,8 +1,13 @@
 package com.github.fernthedev.controllerremapmod.mappings.xbox;
 
 import com.github.fernthedev.controllerremapmod.mappings.ButtonMapping;
+import lombok.AccessLevel;
+import lombok.Getter;
 
+@Getter
 public class XboxOneButtonMapping implements ButtonMapping {
+    
+    @Getter(AccessLevel.NONE)
     private static XboxOneButtonMapping instance;
 
     public static ButtonMapping INSTANCE() {
@@ -11,74 +16,25 @@ public class XboxOneButtonMapping implements ButtonMapping {
         }
         return instance;
     }
+    
+    private final int A = 0;
+    private final int B = 1;
+    private final int X = 2;
+    private final int Y = 3;
+    
+    private final int BUMPER_LEFT = 4;
+    private final int BUMPER_RIGHT = 5;
+    
+    private final int EXTRA_BUTTON = 6;
+    private final int START_BUTTON = 7;
+    
+    private final int LEFT_STICKER = 8;
+    private final int RIGHT_STICKER = 9;
+    
+    public final int DPAD_UP = 10;
+    public final int DPAD_RIGHT = 11;
+    public final int DPAD_DOWN = 12;
+    public final int DPAD_LEFT = 13;
 
-    @Override
-    public int getA() {
-        return 0;
-    }
-
-    @Override
-    public int getB() {
-        return 1;
-    }
-
-    @Override
-    public int getX() {
-        return 2;
-    }
-
-    @Override
-    public int getY() {
-        return 3;
-    }
-
-    @Override
-    public int getBUMPER_LEFT() {
-        return 4;
-    }
-
-    @Override
-    public int getBUMPER_RIGHT() {
-        return 5;
-    }
-
-    @Override
-    public int getEXTRA_BUTTON() {
-        return 6;
-    }
-
-    @Override
-    public int getSTART_BUTTON() {
-        return 7;
-    }
-
-    @Override
-    public int getLEFT_STICKER() {
-        return 8;
-    }
-
-    @Override
-    public int getRIGHT_STICKER() {
-        return 9;
-    }
-
-    @Override
-    public int getDPAD_UP() {
-        return 10;
-    }
-
-    @Override
-    public int getDPAD_RIGHT() {
-        return 11;
-    }
-
-    @Override
-    public int getDPAD_DOWN() {
-        return 12;
-    }
-
-    @Override
-    public int getDPAD_LEFT() {
-        return 13;
-    }
+    
 }

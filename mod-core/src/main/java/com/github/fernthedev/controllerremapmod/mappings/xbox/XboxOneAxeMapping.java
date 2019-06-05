@@ -1,12 +1,14 @@
 package com.github.fernthedev.controllerremapmod.mappings.xbox;
 
 import com.github.fernthedev.controllerremapmod.mappings.AxesMapping;
+import lombok.AccessLevel;
+import lombok.Getter;
 
-
+@Getter
 public class XboxOneAxeMapping implements AxesMapping {
 
+    @Getter(AccessLevel.NONE)
     private static XboxOneAxeMapping instance;
-
 
     public static AxesMapping INSTANCE() {
         if(instance == null) {
@@ -15,64 +17,12 @@ public class XboxOneAxeMapping implements AxesMapping {
         return instance;
     }
 
-    /**
-     * 1 IS RIGHT
-     * -1 IS LEFT
-     * 0 IS STATELESS
-     */
-    @Override
-    public int getHORIZONTAL_LEFT_STICKER() {
-        return 0;
-    }
-
-    /**
-     * -1 IS DOWN
-     * 1 IS UP
-     * 0 IS STATELESS
-     */
-    @Override
-    public int getVERTICAL_LEFT_STICKER() {
-        return 1;
-    }
-
-    /**
-     * 1 IS RIGHT
-     * -1 IS LEFT
-     * 0 IS STATELESS
-     */
-    @Override
-    public int getVERTICAL_RIGHT_STICKER() {
-        return 2;
-    }
-
-    /**
-     * -1 IS DOWN
-     * 1 IS UP
-     * 0 IS STATELESS
-     */
-    @Override
-    public int getHORIZONTAL_RIGHT_STICKER() {
-        return 3;
-    }
-
-    /**
-     * -1 is default
-     * 1 is trigger
-     */
-    @Override
-    public int getLEFT_TRIGGER() {
-        return 4;
-    }
-
-    /**
-     * 0 is default
-     * 1 is trigger
-     */
-    @Override
-    public int getRIGHT_TRIGGER() {
-        return 5;
-    }
-
+    private final int HORIZONTAL_LEFT_STICKER = 0;
+    private final int VERTICAL_LEFT_STICKER = 1;
+    private final int VERTICAL_RIGHT_STICKER = 2;
+    private final int HORIZONTAL_RIGHT_STICKER = 3;
+    private final int LEFT_TRIGGER = 4;
+    private final int RIGHT_TRIGGER = 5;
 
 
 }

@@ -4,6 +4,7 @@ import com.github.fernthedev.controllerremapmod.mappings.Mapping;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NonNull;
+import org.apache.commons.lang3.Validate;
 
 import java.nio.ByteBuffer;
 
@@ -18,27 +19,53 @@ public class ControllerButtons {
     @NonNull
     private Mapping mapping;
 
-    private ControllerButtonState A = new ControllerButtonState(mapping.getButtonMapping().getA());
-    private ControllerButtonState B = new ControllerButtonState(mapping.getButtonMapping().getB());
-    private ControllerButtonState X = new ControllerButtonState(mapping.getButtonMapping().getX());
-    private ControllerButtonState Y = new ControllerButtonState(mapping.getButtonMapping().getY());
+    private ControllerButtonState A;
+    private ControllerButtonState B;
+    private ControllerButtonState X;
+    private ControllerButtonState Y;
 
-    private ControllerButtonState BUMPER_LEFT = new ControllerButtonState(mapping.getButtonMapping().getBUMPER_LEFT());
-    private ControllerButtonState BUMPER_RIGHT = new ControllerButtonState(mapping.getButtonMapping().getBUMPER_RIGHT());
+    private ControllerButtonState BUMPER_LEFT;
+    private ControllerButtonState BUMPER_RIGHT;
 
-    private ControllerButtonState EXTRA_BUTTON = new ControllerButtonState(mapping.getButtonMapping().getEXTRA_BUTTON());
-    private ControllerButtonState START_BUTTON = new ControllerButtonState(mapping.getButtonMapping().getSTART_BUTTON());
+    private ControllerButtonState EXTRA_BUTTON;
+    private ControllerButtonState START_BUTTON;
 
-    private ControllerButtonState LEFT_STICKER = new ControllerButtonState(mapping.getButtonMapping().getLEFT_STICKER());
-    private ControllerButtonState RIGHT_STICKER = new ControllerButtonState(mapping.getButtonMapping().getRIGHT_STICKER());
+    private ControllerButtonState LEFT_STICKER;
+    private ControllerButtonState RIGHT_STICKER;
 
-    private ControllerButtonState DPAD_UP = new ControllerButtonState(mapping.getButtonMapping().getDPAD_UP());
-    private ControllerButtonState DPAD_RIGHT = new ControllerButtonState(mapping.getButtonMapping().getDPAD_RIGHT());
-    private ControllerButtonState DPAD_DOWN = new ControllerButtonState(mapping.getButtonMapping().getDPAD_DOWN());
-    private ControllerButtonState DPAD_LEFT = new ControllerButtonState(mapping.getButtonMapping().getDPAD_LEFT());
+    private ControllerButtonState DPAD_UP;
+    private ControllerButtonState DPAD_RIGHT;
+    private ControllerButtonState DPAD_DOWN;
+    private ControllerButtonState DPAD_LEFT;
+
+    private void build() {
+        A = new ControllerButtonState(mapping.getButtonMapping().getA());
+        B = new ControllerButtonState(mapping.getButtonMapping().getB());
+        X = new ControllerButtonState(mapping.getButtonMapping().getX());
+        Y = new ControllerButtonState(mapping.getButtonMapping().getY());
+
+        BUMPER_LEFT = new ControllerButtonState(mapping.getButtonMapping().getBUMPER_LEFT());
+        BUMPER_RIGHT = new ControllerButtonState(mapping.getButtonMapping().getBUMPER_RIGHT());
+
+        EXTRA_BUTTON = new ControllerButtonState(mapping.getButtonMapping().getEXTRA_BUTTON());
+        START_BUTTON = new ControllerButtonState(mapping.getButtonMapping().getSTART_BUTTON());
+
+        LEFT_STICKER = new ControllerButtonState(mapping.getButtonMapping().getLEFT_STICKER());
+        RIGHT_STICKER = new ControllerButtonState(mapping.getButtonMapping().getRIGHT_STICKER());
+
+        DPAD_UP = new ControllerButtonState(mapping.getButtonMapping().getDPAD_UP());
+        DPAD_RIGHT = new ControllerButtonState(mapping.getButtonMapping().getDPAD_RIGHT());
+        DPAD_DOWN = new ControllerButtonState(mapping.getButtonMapping().getDPAD_DOWN());
+        DPAD_LEFT = new ControllerButtonState(mapping.getButtonMapping().getDPAD_LEFT());
+
+
+    }
 
     public static ControllerButtons getControllerButtons(int controllerIndex, @NonNull Mapping mapping) {
+        Validate.notNull(mapping);
+
         ControllerButtons controllerButtons = new ControllerButtons(mapping);
+        controllerButtons.build();
 
         ByteBuffer buttons = glfwGetJoystickButtons(controllerIndex);
 

@@ -68,7 +68,6 @@ public abstract class IConfigHandler {
 
             sync();
 
-            controllerHandler.updateSettings(getSettings());
          }
       } catch (Exception ee) {
          ee.printStackTrace();
