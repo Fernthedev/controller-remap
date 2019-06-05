@@ -2,25 +2,17 @@ package com.github.fernthedev.controllerremapmod.config;
 
 import com.github.fernthedev.controllerremapmod.mappings.Mapping;
 import com.github.fernthedev.controllerremapmod.mappings.xbox.XboxOneMapping;
-import com.google.gson.Gson;
 import lombok.Getter;
-import lombok.Setter;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class TOMLSettingsConfig extends SettingsConfigBase {
 
     private ForgeConfigSpec.IntValue sensitivityConfig;
 
     private ForgeConfigSpec.ConfigValue<String> selectedMappingConfig;
-
-    @Setter
-    private static List<ForgeConfigSpec.ConfigValue<String>> mappingListConfig = new ArrayList<>();
 
     @Getter
     private ModConfig modConfig;
@@ -48,25 +40,12 @@ public class TOMLSettingsConfig extends SettingsConfigBase {
             final ModConfig config = event.getConfig();
             if (config.getSpec() == ConfigHandler.getCLIENT_SPEC()) {
                 parseFromConfig(config);
-            } else if(ConfigHandler.getLoadedMappingSpecList().contains(config.getSpec())) {
-                loadMappings();
             }
         });
 
 
     }
 
-
-    public void loadMappings() {
-        loadedMappings = new ArrayList<>();
-
-        for(ForgeConfigSpec.ConfigValue<String> val : mappingListConfig) {
-            String json = val.get();
-
-//                Configuration tempConfig = new Configuration(file);
-            loadedMappings.add(new Gson().fromJson(json,Mapping.class));
-        }
-    }
 
     @Override
     public void parseFromConfig(Object configObject) {
@@ -102,23 +81,6 @@ public class TOMLSettingsConfig extends SettingsConfigBase {
             return defVal;
         }
         return modConfig.getConfigData().get(path);
-    }
-
-
-    public static class MappingReaderBuilder {
-
-        public MappingReaderBuilder(ForgeConfigSpec.Builder b) {
-            b.push(MAPPING_CATEGORY);
-
-            ForgeConfigSpec.ConfigValue<String> val = b.comment("A mapping used for controllers.").define("mapping",new XboxOneMapping().toJson());
-
-            mappingListConfig.add(val);
-
-
-            b.pop();
-            b.build();
-
-        }
     }
 
 }

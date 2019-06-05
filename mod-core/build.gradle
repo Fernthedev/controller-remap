@@ -50,6 +50,8 @@ repositories {
 dependencies {
 
     provided "org.lwjgl:lwjgl-glfw:$lwjglVersion"
+    compile group: 'com.squareup.okio', name: 'okio', version: '2.2.2'
+
 //    compileOnly "org.lwjgl:lwjgl-glfw:$lwjglVersion"
 //    runtimeOnly "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives"
 //    runtimeOnly "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives"

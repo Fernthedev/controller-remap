@@ -4,6 +4,7 @@ import com.github.fernthedev.controllerremapmod.mappings.gson.GsonAxeMapping;
 import com.github.fernthedev.controllerremapmod.mappings.gson.GsonButtonMapping;
 import com.github.fernthedev.controllerremapmod.mappings.gson.GsonMapping;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import lombok.Data;
 import lombok.Getter;
 
@@ -30,4 +31,6 @@ public abstract class Mapping {
     public String toJson() {
         return new Gson().toJson(this);
     }
+
+    public String toJsonPretty() {return new GsonBuilder().setPrettyPrinting().create().toJson(this); }
 }

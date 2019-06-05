@@ -2,9 +2,10 @@ package com.github.fernthedev.controllerremapmod;
 
 import com.github.fernthedev.controllerremapmod.config.ConfigHandler;
 import com.github.fernthedev.controllerremapmod.config.IConfigHandler;
-import com.github.fernthedev.controllerremapmod.config.TOMLSettingsConfig;
+import com.github.fernthedev.controllerremapmod.config.MappingConfig;
 import com.github.fernthedev.controllerremapmod.core.ControllerHandler;
 import com.github.fernthedev.controllerremapmod.core.IHandler;
+import com.github.fernthedev.controllerremapmod.mappings.xbox.XboxOneMapping;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
@@ -14,7 +15,6 @@ import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
-import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModContainer;
@@ -26,7 +26,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,7 +33,6 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
-import java.util.Objects;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(ControllerRemapModMain.MODID)
@@ -87,25 +85,10 @@ public class ControllerRemapModMain implements IHandler {
             dir.mkdir();
         }
 
+        File template = new File(dir, "template.json");
 
-
-        if(dir.isDirectory() && dir.listFiles() != null) {
-
-            for(File file : Objects.requireNonNull(dir.listFiles())) {
-                if(file.isDirectory()) continue;
-                final Pair<TOMLSettingsConfig.MappingReaderBuilder, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(TOMLSettingsConfig.MappingReaderBuilder::new);
-
-                ForgeConfigSpec spec = specPair.getRight();
-
-                ConfigHandler.getLoadedMappingSpecList().add(spec);
-
-                ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT,spec,file.getAbsolutePath());
-
-//                ModConfig tempConfig = new ModConfig(ModConfig.Type.CLIENT,spec,(ModContainer) ControllerHandler.getHandler().getModContainer(),ControllerHandler.getHandler().getModID() + "/" + file.getName() );
-
-//                tempConfig.save();
-            }
-        }
+        MappingConfig mappingConfig = new MappingConfig(template,new XboxOneMapping());
+        mappingConfig.load();
 
         ControllerHandler.setHandler(this);
 
