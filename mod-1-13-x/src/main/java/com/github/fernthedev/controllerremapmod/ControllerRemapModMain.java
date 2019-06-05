@@ -74,9 +74,18 @@ public class ControllerRemapModMain implements IHandler {
     private void setup(final FMLCommonSetupEvent e) {
         // some preinit code
         minecraftClass = Minecraft.getInstance().getClass();
-        ControllerHandler.setHandler(this);
+
         final ModLoadingContext modLoadingContext = ModLoadingContext.get();
-        modLoadingContext.registerConfig(ModConfig.Type.CLIENT,ConfigHandler.CLIENT_SPEC);
+        logger.info("Registering config");
+
+        configHandler = ConfigHandler.registerSpec();
+
+        modLoadingContext.registerConfig(ModConfig.Type.CLIENT,ConfigHandler.getCLIENT_SPEC());
+
+
+        configHandler.getSettings().parseFromConfig(null);
+
+        ControllerHandler.setHandler(this);
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {
@@ -213,7 +222,7 @@ public class ControllerRemapModMain implements IHandler {
     @Override
     public IConfigHandler getConfigHandler() {
         if(configHandler == null) {
-            configHandler = new ConfigHandler();
+            configHandler = new ConfigHandler(this);
         }
         return configHandler;
     }

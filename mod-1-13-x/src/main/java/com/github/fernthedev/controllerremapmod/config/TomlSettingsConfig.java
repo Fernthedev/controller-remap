@@ -9,6 +9,7 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +25,6 @@ public class TomlSettingsConfig extends SettingsConfigBase {
 
     public void build(ForgeConfigSpec.Builder builder) {
         load(builder);
-
-
-        parseFromConfig(builder);
     }
 
     private void loadDirectoryMappings() {
@@ -73,14 +71,18 @@ public class TomlSettingsConfig extends SettingsConfigBase {
 
         builder.pop();
 
-
         //loadDirectoryMappings();
+
+        builder.build();
+
+
+
     }
 
 
 
     @Override
-    public void parseFromConfig(Object configObject) {
+    public void parseFromConfig(@Nullable Object configObject) {
 
         sensitivity = sensitivityConfig.get();
 
@@ -113,6 +115,7 @@ public class TomlSettingsConfig extends SettingsConfigBase {
 //                Configuration tempConfig = new Configuration(file);
             loadedMappings.add(new Gson().fromJson(json,Mapping.class));
             b.pop();
+            b.build();
         }
     }
 
