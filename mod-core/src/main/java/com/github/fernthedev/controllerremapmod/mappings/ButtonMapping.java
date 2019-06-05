@@ -1,5 +1,8 @@
 package com.github.fernthedev.controllerremapmod.mappings;
 
+import com.github.fernthedev.controllerremapmod.mappings.gson.GsonButtonMapping;
+import com.google.gson.Gson;
+
 public interface ButtonMapping {
 
 
@@ -29,4 +32,12 @@ public interface ButtonMapping {
     public abstract int getDPAD_DOWN();
 
     public abstract int getDPAD_LEFT();
+
+    default String toJson() {
+        return new Gson().toJson(this);
+    }
+
+    default GsonButtonMapping toGson() {
+        return new Gson().fromJson(toJson(),GsonButtonMapping.class);
+    }
 }

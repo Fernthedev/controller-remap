@@ -7,12 +7,17 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConfigHandler extends IConfigHandler {
 
     @NonNull
     @Getter
     private static ForgeConfigSpec CLIENT_SPEC;
+
+    @Getter
+    private static List<ForgeConfigSpec> loadedMappingSpecList = new ArrayList<>();
 
 
 
@@ -23,10 +28,10 @@ public class ConfigHandler extends IConfigHandler {
 
     @Override
     public void setSettings(SettingsConfigBase settingsConfigBase) {
-        this.settingsConfig = (TomlSettingsConfig) settingsConfigBase;
+        this.settingsConfig = (TOMLSettingsConfig) settingsConfigBase;
     }
 
-    private TomlSettingsConfig settingsConfig;
+    private TOMLSettingsConfig settingsConfig;
 
     public ConfigHandler(File configFile) {
         super(configFile);
@@ -35,7 +40,7 @@ public class ConfigHandler extends IConfigHandler {
     @Override
     protected SettingsConfigBase buildSettings() {
         if(settingsConfig == null) {
-            settingsConfig = new TomlSettingsConfig();
+            settingsConfig = new TOMLSettingsConfig();
         }
         return settingsConfig;
     }
@@ -64,7 +69,7 @@ public class ConfigHandler extends IConfigHandler {
 
 
     private ConfigHandler(ForgeConfigSpec.Builder builder) {
-        settingsConfig = new TomlSettingsConfig();
+        settingsConfig = new TOMLSettingsConfig();
 
         settingsConfig.build(builder);
     }

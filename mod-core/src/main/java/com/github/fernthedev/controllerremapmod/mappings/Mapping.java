@@ -1,5 +1,8 @@
 package com.github.fernthedev.controllerremapmod.mappings;
 
+import com.github.fernthedev.controllerremapmod.mappings.gson.GsonAxeMapping;
+import com.github.fernthedev.controllerremapmod.mappings.gson.GsonButtonMapping;
+import com.github.fernthedev.controllerremapmod.mappings.gson.GsonMapping;
 import com.google.gson.Gson;
 import lombok.Data;
 import lombok.Getter;
@@ -8,21 +11,20 @@ import lombok.Getter;
 @Getter
 public abstract class Mapping {
 
-    protected ButtonMapping buttonMapping;
-    protected AxesMapping axesMapping;
+    protected GsonButtonMapping buttonMapping;
+    protected GsonAxeMapping axesMapping;
     protected String name = "UnknownMapping";
 
-    public Mapping() {}
-
     protected Mapping(ButtonMapping buttonMapping,AxesMapping axesMapping,String name) {
-        this.buttonMapping = buttonMapping;
-        this.axesMapping = axesMapping;
+        this.buttonMapping = buttonMapping.toGson();
+        this.axesMapping = axesMapping.toGson();
         this.name = name;
     }
 
+    protected Mapping() {}
 
-    public static Mapping loadFromJSON(String json) {
-        return new Gson().fromJson(json,Mapping.class);
+    public static GsonMapping loadFromJSON(String json) {
+        return new Gson().fromJson(json, GsonMapping.class);
     }
 
     public String toJson() {

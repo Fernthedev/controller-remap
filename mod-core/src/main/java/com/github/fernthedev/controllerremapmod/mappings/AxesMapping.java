@@ -1,5 +1,8 @@
 package com.github.fernthedev.controllerremapmod.mappings;
 
+import com.github.fernthedev.controllerremapmod.mappings.gson.GsonAxeMapping;
+import com.google.gson.Gson;
+
 public interface AxesMapping {
 
     /**
@@ -42,5 +45,11 @@ public interface AxesMapping {
      */
     public abstract int getRIGHT_TRIGGER();
 
+    default String toJson() {
+        return new Gson().toJson(this);
+    }
 
+    default GsonAxeMapping toGson() {
+        return new Gson().fromJson(toJson(),GsonAxeMapping.class);
+    }
 }

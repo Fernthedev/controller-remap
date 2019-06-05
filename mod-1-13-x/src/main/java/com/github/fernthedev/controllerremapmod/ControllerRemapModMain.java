@@ -2,6 +2,7 @@ package com.github.fernthedev.controllerremapmod;
 
 import com.github.fernthedev.controllerremapmod.config.ConfigHandler;
 import com.github.fernthedev.controllerremapmod.config.IConfigHandler;
+import com.github.fernthedev.controllerremapmod.config.TOMLSettingsConfig;
 import com.github.fernthedev.controllerremapmod.core.ControllerHandler;
 import com.github.fernthedev.controllerremapmod.core.IHandler;
 import lombok.Getter;
@@ -13,6 +14,7 @@ import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
+import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModContainer;
@@ -24,12 +26,15 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
+import java.util.Objects;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(ControllerRemapModMain.MODID)
@@ -67,13 +72,44 @@ public class ControllerRemapModMain implements IHandler {
         MinecraftForge.EVENT_BUS.register(new MyEventHandler(this));
 
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        modEventBus.addListener((ModConfig.ModConfigEvent event) -> {
-            new RuntimeException("Got config " + event.getConfig() + " name " + event.getConfig().getModId() + ":" + event.getConfig().getFileName()).printStackTrace();
-            final ModConfig config = event.getConfig();
-            if (config.getSpec() == ConfigHandler.getCLIENT_SPEC()) {
-                logger.info("IT IS OUR CONFIG!");
+
+
+        final ModLoadingContext modLoadingContext = ModLoadingContext.get();
+        logger.info("Registering config");
+
+        configHandler = ConfigHandler.registerSpec();
+
+        modLoadingContext.registerConfig(ModConfig.Type.CLIENT,ConfigHandler.getCLIENT_SPEC());
+
+        File dir = new File(getConfigDir().toFile(),"mappings");
+
+        if(!dir.exists()) {
+            dir.mkdir();
+        }
+
+
+
+        if(dir.isDirectory() && dir.listFiles() != null) {
+
+            for(File file : Objects.requireNonNull(dir.listFiles())) {
+                if(file.isDirectory()) continue;
+                final Pair<TOMLSettingsConfig.MappingReaderBuilder, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(TOMLSettingsConfig.MappingReaderBuilder::new);
+
+                ForgeConfigSpec spec = specPair.getRight();
+
+                ConfigHandler.getLoadedMappingSpecList().add(spec);
+
+                ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT,spec,file.getAbsolutePath());
+
+//                ModConfig tempConfig = new ModConfig(ModConfig.Type.CLIENT,spec,(ModContainer) ControllerHandler.getHandler().getModContainer(),ControllerHandler.getHandler().getModID() + "/" + file.getName() );
+
+//                tempConfig.save();
             }
-        });
+        }
+
+        ControllerHandler.setHandler(this);
+
+
 
     }
 
@@ -84,14 +120,7 @@ public class ControllerRemapModMain implements IHandler {
         // some preinit code
         minecraftClass = Minecraft.getInstance().getClass();
 
-        final ModLoadingContext modLoadingContext = ModLoadingContext.get();
-        logger.info("Registering config");
 
-        configHandler = ConfigHandler.registerSpec();
-
-        modLoadingContext.registerConfig(ModConfig.Type.CLIENT,ConfigHandler.getCLIENT_SPEC());
-
-        ControllerHandler.setHandler(this);
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {
