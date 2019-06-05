@@ -68,7 +68,7 @@ public class ControllerRemapModMain implements IHandler {
 
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener((ModConfig.ModConfigEvent event) -> {
-            new RuntimeException("Got config " + event.getConfig() + " name " + event.getConfig().getModId() + ":" + event.getConfig().getFileName());
+            new RuntimeException("Got config " + event.getConfig() + " name " + event.getConfig().getModId() + ":" + event.getConfig().getFileName()).printStackTrace();
             final ModConfig config = event.getConfig();
             if (config.getSpec() == ConfigHandler.getCLIENT_SPEC()) {
                 logger.info("IT IS OUR CONFIG!");

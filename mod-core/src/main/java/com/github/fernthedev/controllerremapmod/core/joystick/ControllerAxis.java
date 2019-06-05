@@ -86,6 +86,7 @@ public class ControllerAxis {
 
             if(id == controllerAxis.HORIZONTAL_LEFT_STICKER.getButtonIndex()) controllerAxis.HORIZONTAL_LEFT_STICKER.setValue(state);
             if(id == controllerAxis.VERTICAL_LEFT_STICKER.getButtonIndex()) controllerAxis.VERTICAL_LEFT_STICKER.setValue(state);
+            if(id == controllerAxis.VERTICAL_RIGHT_STICKER.getButtonIndex()) controllerAxis.VERTICAL_RIGHT_STICKER.setValue(state);
             if(id == controllerAxis.HORIZONTAL_RIGHT_STICKER.getButtonIndex()) controllerAxis.HORIZONTAL_RIGHT_STICKER.setValue(state);
             if(id == controllerAxis.LEFT_TRIGGER.getButtonIndex()) controllerAxis.LEFT_TRIGGER.setValue(state);
             if(id == controllerAxis.RIGHT_TRIGGER.getButtonIndex()) controllerAxis.RIGHT_TRIGGER.setValue(state);
