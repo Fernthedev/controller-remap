@@ -65,7 +65,6 @@ public class ControllerRemapModMain implements IHandler {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
 
 
-
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(new MyEventHandler(this));
 

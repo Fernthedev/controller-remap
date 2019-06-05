@@ -21,7 +21,7 @@ public class ConfigHandler extends IConfigHandler {
     @Getter
     private static List<ForgeConfigSpec> loadedMappingSpecList = new ArrayList<>();
 
-    private List<MappingConfig> mappingConfigs;
+    private List<MappingConfig> mappingConfigs = new ArrayList<>();
 
 
 
