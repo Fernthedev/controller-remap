@@ -2,7 +2,7 @@ package com.github.fernthedev.controllerremapmod.gui;
 
 //import net.minecraftforge.fml.client.config.GuiConfig;
 
-public class ConfigGUI  {//extends GuiConfig {
+public class ConfigGUI {//extends GuiConfig {
 //    /**
 //     * This constructor handles the {@code @Config} configuration classes
 //     *
