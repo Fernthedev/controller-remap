@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/controller-remap.iml" filepath="$PROJECT_DIR$/.idea/modules/controller-remap.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/controller-remap.main.iml" filepath="$PROJECT_DIR$/.idea/modules/controller-remap.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/mod-1-13-x/controller-remap.mod-1-13-x.iml" filepath="$PROJECT_DIR$/.idea/modules/mod-1-13-x/controller-remap.mod-1-13-x.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/mod-1-13-x/controller-remap.mod-1-13-x.main.iml" filepath="$PROJECT_DIR$/.idea/modules/mod-1-13-x/controller-remap.mod-1-13-x.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/mod-1-13-x/controller-remap.mod-1-13-x.test.iml" filepath="$PROJECT_DIR$/.idea/modules/mod-1-13-x/controller-remap.mod-1-13-x.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/mod-core/controller-remap.mod-core.iml" filepath="$PROJECT_DIR$/.idea/modules/mod-core/controller-remap.mod-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/mod-core/controller-remap.mod-core.api.iml" filepath="$PROJECT_DIR$/.idea/modules/mod-core/controller-remap.mod-core.api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/mod-core/controller-remap.mod-core.main.iml" filepath="$PROJECT_DIR$/.idea/modules/mod-core/controller-remap.mod-core.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/mod-core/controller-remap.mod-core.test.iml" filepath="$PROJECT_DIR$/.idea/modules/mod-core/controller-remap.mod-core.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/controller-remap.test.iml" filepath="$PROJECT_DIR$/.idea/modules/controller-remap.test.iml" />
+    </modules>
+  </component>
+</project>
