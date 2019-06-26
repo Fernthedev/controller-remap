@@ -1,26 +1,65 @@
 package com.github.fernthedev.controllerremapmod.core;
 
+import com.github.fernthedev.controllerremapmod.config.IConfigHandler;
+import com.github.fernthedev.controllerremapmod.config.ISettingsConfig;
+import com.github.fernthedev.controllerremapmod.config.MappingConfig;
 import com.github.fernthedev.controllerremapmod.core.joystick.ControllerButtonState;
 import com.github.fernthedev.controllerremapmod.core.joystick.ControllerButtons;
 import com.github.fernthedev.controllerremapmod.core.joystick.JoystickController;
+import com.github.fernthedev.controllerremapmod.mappings.ps4.DS4Mapping;
+import com.github.fernthedev.controllerremapmod.mappings.xbox.XboxOneMapping;
+import lombok.Getter;
 import net.minecraft.util.MovementInput;
 import org.apache.logging.log4j.Logger;
+
+import java.io.File;
 
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 
 public class ControllerHandler {
 
-    private static JoystickController controller = new JoystickController(0);
+    private static JoystickController controller;
+
+    @Getter
     private static IHandler handler;
 
+    @Getter
+    private static IConfigHandler configHandler;
 
     public static void setHandler(IHandler newHandler) {
         if(handler == null) {
             handler = newHandler;
             handler.setControllerHandler(new ControllerHandler());
+
+            configHandler = handler.getConfigHandler();
+
+            handler.getLogger().debug("The controller mapping is " + configHandler.getSettings());
+
+            controller = new JoystickController(0,configHandler.getSettings().getSelectedMapping());
         }else{
             throw new IllegalStateException("Handler has been set already");
         }
+    }
+
+    public static void createMappingTemplates(File dir) {
+        if(!dir.exists()) {
+            dir.mkdir();
+        }
+
+        File mapFile = new File(dir, "template.json");
+
+        MappingConfig mappingConfig = new MappingConfig(mapFile,new XboxOneMapping());
+        mappingConfig.load();
+        ///////////////////////////////////////////
+        mapFile = new File(dir, "xboxone.json");
+
+        mappingConfig = new MappingConfig(mapFile,new XboxOneMapping());
+        mappingConfig.load();
+        ////////////////////////////////////
+        mapFile = new File(dir, "dualshock4.json");
+
+        mappingConfig = new MappingConfig(mapFile,new DS4Mapping());
+        mappingConfig.load();
     }
 
     {
@@ -49,8 +88,6 @@ public class ControllerHandler {
     private int leftClickPressTimeHeld;
     private int rightClickPressTimeHeld;
 
-    private double multiplier = 1.2; //TODO: Will be changed to sensitivity and will add a menu for changing this value
-
     private boolean sneakToggleButton;
 
     private double leftDeadzone = 0.3;
@@ -58,6 +95,9 @@ public class ControllerHandler {
 
     public void moveEvent(MovementInput event,IControlPlayer player) {
         glfwPollEvents();
+        if(!controller.isConnected()) return;
+
+        updateSettings();
 
         if(oldMoveButtons == null) {
             oldMoveButtons = controller.getButtons();
@@ -228,53 +268,6 @@ public class ControllerHandler {
             toggle3rdPersonButton = false;
         }
 
-        oldMoveButtons = controller.getButtons();
-
-
-    }
-
-    private boolean toggleChatButton;
-    private boolean toggle3rdPersonButton;
-
-
-    public void render(IControlPlayer player) {
-        if(!handler.isGuiOpen()) {
-
-            double deadzoneAmount = 0.3;
-
-            //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationPitch += controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue();)
-            if(deadzone(controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue(),-deadzoneAmount,deadzoneAmount))
-                player.addRotationPitch((float) (controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue() * multiplier)); // -1 is down, 1 is up, 0 is stateless
-
-            if(deadzone(controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue(),-deadzoneAmount,deadzoneAmount))
-                //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationYaw += controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue();)
-                player.addRotationYaw((float) (controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue() * multiplier)); // -1 IS DOWN, 1 IS UP, 0 IS STATELESS
-
-        }
-    }
-
-    private boolean toggleMenuButton;
-
-    public void updateTick(IControlPlayer player) {
-        glfwPollEvents();
-        if(oldButtons == null) {
-            oldButtons = controller.getButtons();
-        }
-
-        if(controller.getButtons().getSTART_BUTTON().isState()) {
-            if(!toggleMenuButton) {
-                toggleMenuButton = true;
-                if (handler.isGuiOpen()) {
-                    handler.closeGUI();
-                } else {
-                    handler.openMainMenu();
-                }
-            }
-            //Would execute what Escape does
-        }else{
-            toggleMenuButton = false;
-        }
-
         boolean resetDroptime = true;
 
         //////////////////////////////////////////////
@@ -309,6 +302,62 @@ public class ControllerHandler {
         }
         //////////////////////////////////////////////
 
+
+        oldMoveButtons = controller.getButtons();
+
+
+    }
+
+    private boolean toggleChatButton;
+    private boolean toggle3rdPersonButton;
+
+
+    public void render(IControlPlayer player) {
+        if(!handler.isGuiOpen()) {
+
+            double deadzoneAmount = 0.3;
+
+
+
+            //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationPitch += controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue();)
+            if(deadzone(controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue(),-deadzoneAmount,deadzoneAmount))
+                player.addRotationPitch((float) (controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue() * updateSettings().getSensitivity())); // -1 is down, 1 is up, 0 is stateless
+
+            if(deadzone(controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue(),-deadzoneAmount,deadzoneAmount))
+                //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationYaw += controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue();)
+                player.addRotationYaw((float) (controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue() *  updateSettings().getSensitivity())); // -1 IS DOWN, 1 IS UP, 0 IS STATELESS
+
+        }
+    }
+
+    private boolean toggleMenuButton;
+
+    public void updateTick(IControlPlayer player) {
+        glfwPollEvents();
+        if(!controller.isConnected()) return;
+
+        updateSettings();
+
+        if(oldButtons == null) {
+            oldButtons = controller.getButtons();
+        }
+
+        if(controller.getButtons().getSTART_BUTTON().isState()) {
+            if(!toggleMenuButton) {
+                toggleMenuButton = true;
+                if (handler.isGuiOpen()) {
+                    handler.closeGUI();
+                } else {
+                    handler.openMainMenu();
+                }
+            }
+            //Would execute what Escape does
+        }else{
+            toggleMenuButton = false;
+        }
+
+
+
         //Closes GUI
         if(checkToggle(controller.getButtons().getB(),oldButtons.getB())) {
             if(handler.isGuiOpen()) {
@@ -323,6 +372,8 @@ public class ControllerHandler {
         if(rightClickTimeDelay > 0) {
             rightClickTimeDelay--;
         }
+
+
 
         oldButtons = controller.getButtons();
     }
@@ -341,4 +392,8 @@ public class ControllerHandler {
         return value > max || value < min;
     }
 
+    private ISettingsConfig updateSettings() {
+        controller.setMapping(handler.getConfigHandler().getSettings().getSelectedMapping());
+        return handler.getConfigHandler().getSettings();
+    }
 }

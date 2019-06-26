@@ -5,18 +5,13 @@
       <profile default="true" name="Default" enabled="true" />
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="controller-remap.mod-1.13.api" target="1.8" />
-      <module name="controller-remap.mod-1.13.main" target="1.8" />
-      <module name="controller-remap.mod-1.13.test" target="1.8" />
-      <module name="controller-remap.mod-1.8.api" target="1.6" />
-      <module name="controller-remap.mod-1.8.main" target="1.6" />
-      <module name="controller-remap.mod-1.8.test" target="1.6" />
-      <module name="controller-remap.mod-legacy.api" target="1.6" />
-      <module name="controller-remap.mod-legacy.main" target="1.8" />
-      <module name="controller-remap.mod-legacy.test" target="1.6" />
-      <module name="controller-remap.mod-new.api" target="1.8" />
-      <module name="controller-remap.mod-new.main" target="1.8" />
-      <module name="controller-remap.mod-new.test" target="1.8" />
+      <module name="controller-remap.main" target="1.8" />
+      <module name="controller-remap.mod-1-13-x.main" target="1.8" />
+      <module name="controller-remap.mod-1-13-x.test" target="1.8" />
+      <module name="controller-remap.mod-core.api" target="1.6" />
+      <module name="controller-remap.mod-core.main" target="1.8" />
+      <module name="controller-remap.mod-core.test" target="1.6" />
+      <module name="controller-remap.test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

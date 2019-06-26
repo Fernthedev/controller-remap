@@ -1,7 +1,8 @@
 package com.github.fernthedev.controllerremapmod.core.joystick;
 
+import com.github.fernthedev.controllerremapmod.mappings.Mapping;
 import lombok.Data;
-import lombok.Setter;
+import lombok.NonNull;
 
 import java.nio.FloatBuffer;
 import java.util.Objects;
@@ -9,85 +10,87 @@ import java.util.Objects;
 import static org.lwjgl.glfw.GLFW.glfwGetJoystickAxes;
 
 @Data
-@Setter
+//@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ControllerAxis {
 
-    /**
-     * 1 IS RIGHT
-     * -1 IS LEFT
-     * 0 IS STATELESS
-     */
-    private ControllerAxisState HORIZONTAL_LEFT_STICKER = new ControllerAxisState(0);
-
-    /**
-     * -1 IS DOWN
-     * 1 IS UP
-     * 0 IS STATELESS
-     */
-    private ControllerAxisState VERTICAL_LEFT_STICKER = new ControllerAxisState(1);
+    @NonNull
+    private Mapping mapping;
 
     /**
      * 1 IS RIGHT
      * -1 IS LEFT
      * 0 IS STATELESS
      */
-    private ControllerAxisState VERTICAL_RIGHT_STICKER = new ControllerAxisState(2);
+    private ControllerAxisState HORIZONTAL_LEFT_STICKER;
 
     /**
      * -1 IS DOWN
      * 1 IS UP
      * 0 IS STATELESS
      */
-    private ControllerAxisState HORIZONTAL_RIGHT_STICKER = new ControllerAxisState(3);
+    private ControllerAxisState VERTICAL_LEFT_STICKER;
+
+    /**
+     * 1 IS RIGHT
+     * -1 IS LEFT
+     * 0 IS STATELESS
+     */
+    private ControllerAxisState VERTICAL_RIGHT_STICKER;
+
+    /**
+     * -1 IS DOWN
+     * 1 IS UP
+     * 0 IS STATELESS
+     */
+    private ControllerAxisState HORIZONTAL_RIGHT_STICKER;
 
     /**
      * -1 is default
      * 1 is trigger
      */
-    private ControllerAxisState LEFT_TRIGGER = new ControllerAxisState(4);
+    private ControllerAxisState LEFT_TRIGGER;
 
     /**
      * 0 is default
      * 1 is trigger
      */
-    private ControllerAxisState RIGHT_TRIGGER = new ControllerAxisState(5);
+    private ControllerAxisState RIGHT_TRIGGER;
 
+
+    private void build() {
+        HORIZONTAL_LEFT_STICKER = new ControllerAxisState(mapping.getAxesMapping().getHORIZONTAL_LEFT_STICKER());
+        VERTICAL_LEFT_STICKER = new ControllerAxisState(mapping.getAxesMapping().getVERTICAL_LEFT_STICKER());
+        VERTICAL_RIGHT_STICKER = new ControllerAxisState(mapping.getAxesMapping().getVERTICAL_RIGHT_STICKER());
+        HORIZONTAL_RIGHT_STICKER = new ControllerAxisState(mapping.getAxesMapping().getHORIZONTAL_RIGHT_STICKER());
+        LEFT_TRIGGER = new ControllerAxisState(mapping.getAxesMapping().getLEFT_TRIGGER());
+        RIGHT_TRIGGER = new ControllerAxisState(mapping.getAxesMapping().getRIGHT_TRIGGER());
+    }
 
     /**
      * Gets an instance of {@link ControllerAxis} for the controller specified
      * @param controllerIndex The controller
+     * @param mapping
      * @return The instance of {@link ControllerAxis}
      */
-    public static ControllerAxis getAxis(int controllerIndex) {
-        ControllerAxis controllerAxis = new ControllerAxis();
+    public static ControllerAxis getAxis(int controllerIndex, @NonNull Mapping mapping) {
+        ControllerAxis controllerAxis = new ControllerAxis(mapping);
+        controllerAxis.build();
+
         FloatBuffer axes = glfwGetJoystickAxes(controllerIndex);
 
         int axisID = 1;
         while (Objects.requireNonNull(axes).hasRemaining()) {
             float state = axes.get();
-            switch (axisID - 1) {
-                case 0:
-                    controllerAxis.HORIZONTAL_LEFT_STICKER.setValue(state);
-                    break;
-                case 1:
-                    controllerAxis.VERTICAL_LEFT_STICKER.setValue(state);
-                    break;
-                case 2:
-                    controllerAxis.VERTICAL_RIGHT_STICKER.setValue(state);
-                    break;
-                case 3:
-                    controllerAxis.HORIZONTAL_RIGHT_STICKER.setValue(state);
-                    break;
-                case 4:
-                    controllerAxis.LEFT_TRIGGER.setValue(state);
-                    break;
-                case 5:
-                    controllerAxis.RIGHT_TRIGGER.setValue(state);
-                    break;
-                default:
-                    System.out.println("Not found axis value for state: " + state + " and value " + (axisID -1));
-                    break;
-            }
+
+            int id = axisID - 1;
+
+            if(id == controllerAxis.HORIZONTAL_LEFT_STICKER.getButtonIndex()) controllerAxis.HORIZONTAL_LEFT_STICKER.setValue(state);
+            if(id == controllerAxis.VERTICAL_LEFT_STICKER.getButtonIndex()) controllerAxis.VERTICAL_LEFT_STICKER.setValue(state);
+            if(id == controllerAxis.VERTICAL_RIGHT_STICKER.getButtonIndex()) controllerAxis.VERTICAL_RIGHT_STICKER.setValue(state);
+            if(id == controllerAxis.HORIZONTAL_RIGHT_STICKER.getButtonIndex()) controllerAxis.HORIZONTAL_RIGHT_STICKER.setValue(state);
+            if(id == controllerAxis.LEFT_TRIGGER.getButtonIndex()) controllerAxis.LEFT_TRIGGER.setValue(state);
+            if(id == controllerAxis.RIGHT_TRIGGER.getButtonIndex()) controllerAxis.RIGHT_TRIGGER.setValue(state);
+
             axisID++;
         }
         return controllerAxis;

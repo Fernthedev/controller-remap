@@ -1,7 +1,10 @@
 package com.github.fernthedev.controllerremapmod.core.joystick;
 
+import com.github.fernthedev.controllerremapmod.mappings.Mapping;
 import lombok.Data;
-import lombok.Setter;
+import lombok.Getter;
+import lombok.NonNull;
+import org.apache.commons.lang3.Validate;
 
 import java.nio.ByteBuffer;
 
@@ -9,30 +12,61 @@ import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.glfwGetJoystickButtons;
 
 @Data
-@Setter
+@Getter
+//@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ControllerButtons {
 
-    private ControllerButtonState A = new ControllerButtonState(0);
-    private ControllerButtonState B = new ControllerButtonState(1);
-    private ControllerButtonState X = new ControllerButtonState(2);
-    private ControllerButtonState Y = new ControllerButtonState(3);
+    @NonNull
+    private Mapping mapping;
 
-    private ControllerButtonState BUMPER_LEFT = new ControllerButtonState(4);
-    private ControllerButtonState BUMPER_RIGHT = new ControllerButtonState(5);
+    private ControllerButtonState A;
+    private ControllerButtonState B;
+    private ControllerButtonState X;
+    private ControllerButtonState Y;
 
-    private ControllerButtonState EXTRA_BUTTON = new ControllerButtonState(6);
-    private ControllerButtonState START_BUTTON = new ControllerButtonState(7);
+    private ControllerButtonState BUMPER_LEFT;
+    private ControllerButtonState BUMPER_RIGHT;
 
-    private ControllerButtonState LEFT_STICKER = new ControllerButtonState(8);
-    private ControllerButtonState RIGHT_STICKER = new ControllerButtonState(9);
+    private ControllerButtonState EXTRA_BUTTON;
+    private ControllerButtonState START_BUTTON;
 
-    private ControllerButtonState DPAD_UP = new ControllerButtonState(10);
-    private ControllerButtonState DPAD_RIGHT = new ControllerButtonState(11);
-    private ControllerButtonState DPAD_DOWN = new ControllerButtonState(12);
-    private ControllerButtonState DPAD_LEFT = new ControllerButtonState(13);
+    private ControllerButtonState LEFT_STICKER;
+    private ControllerButtonState RIGHT_STICKER;
 
-    public static ControllerButtons getControllerButtons(int controllerIndex) {
-        ControllerButtons controllerButtons = new ControllerButtons();
+    private ControllerButtonState DPAD_UP;
+    private ControllerButtonState DPAD_RIGHT;
+    private ControllerButtonState DPAD_DOWN;
+    private ControllerButtonState DPAD_LEFT;
+
+    private void build() {
+        A = new ControllerButtonState(mapping.getButtonMapping().getA());
+        B = new ControllerButtonState(mapping.getButtonMapping().getB());
+        X = new ControllerButtonState(mapping.getButtonMapping().getX());
+        Y = new ControllerButtonState(mapping.getButtonMapping().getY());
+
+        BUMPER_LEFT = new ControllerButtonState(mapping.getButtonMapping().getBUMPER_LEFT());
+        BUMPER_RIGHT = new ControllerButtonState(mapping.getButtonMapping().getBUMPER_RIGHT());
+
+        EXTRA_BUTTON = new ControllerButtonState(mapping.getButtonMapping().getEXTRA_BUTTON());
+        START_BUTTON = new ControllerButtonState(mapping.getButtonMapping().getSTART_BUTTON());
+
+        LEFT_STICKER = new ControllerButtonState(mapping.getButtonMapping().getLEFT_STICKER());
+        RIGHT_STICKER = new ControllerButtonState(mapping.getButtonMapping().getRIGHT_STICKER());
+
+        DPAD_UP = new ControllerButtonState(mapping.getButtonMapping().getDPAD_UP());
+        DPAD_RIGHT = new ControllerButtonState(mapping.getButtonMapping().getDPAD_RIGHT());
+        DPAD_DOWN = new ControllerButtonState(mapping.getButtonMapping().getDPAD_DOWN());
+        DPAD_LEFT = new ControllerButtonState(mapping.getButtonMapping().getDPAD_LEFT());
+
+
+    }
+
+    public static ControllerButtons getControllerButtons(int controllerIndex, @NonNull Mapping mapping) {
+        Validate.notNull(mapping);
+
+        ControllerButtons controllerButtons = new ControllerButtons(mapping);
+        controllerButtons.build();
+
         ByteBuffer buttons = glfwGetJoystickButtons(controllerIndex);
 
         int buttonID = 1;
@@ -41,51 +75,25 @@ public class ControllerButtons {
             int state = buttons.get();
             boolean pressed = state == GLFW_PRESS;
 
-            switch (buttonID - 1) {
-                case 0:
-                    controllerButtons.A.setState(pressed);
-                    break;
-                case 1:
-                    controllerButtons.B.setState(pressed);
-                    break;
-                case 2:
-                    controllerButtons.X.setState(pressed);
-                    break;
-                case 3:
-                    controllerButtons.Y.setState(pressed);
-                    break;
-                case 4:
-                    controllerButtons.BUMPER_LEFT.setState(pressed);
-                    break;
-                case 5:
-                    controllerButtons.BUMPER_RIGHT.setState(pressed);
-                    break;
-                case 6:
-                    controllerButtons.EXTRA_BUTTON.setState(pressed);
-                    break;
-                case 7:
-                    controllerButtons.START_BUTTON.setState(pressed);
-                    break;
-                case 8:
-                    controllerButtons.LEFT_STICKER.setState(pressed);
-                    break;
-                case 9:
-                    controllerButtons.RIGHT_STICKER.setState(pressed);
-                    break;
-                case 10:
-                    controllerButtons.DPAD_UP.setState(pressed);
-                    break;
-                case 11:
-                    controllerButtons.DPAD_RIGHT.setState(pressed);
-                    break;
-                case 12:
-                    controllerButtons.DPAD_DOWN.setState(pressed);
-                    break;
-                case 13:
-                    controllerButtons.DPAD_LEFT.setState(pressed);
-                    break;
+            int id = buttonID - 1;
 
-            }
+            if(id == controllerButtons.A.getButtonIndex()) controllerButtons.A.setState(pressed);
+            if(id == controllerButtons.B.getButtonIndex()) controllerButtons.B.setState(pressed);
+            if(id == controllerButtons.X.getButtonIndex()) controllerButtons.X.setState(pressed);
+            if(id == controllerButtons.Y.getButtonIndex()) controllerButtons.Y.setState(pressed);
+
+            if(id == controllerButtons.BUMPER_LEFT.getButtonIndex()) controllerButtons.BUMPER_LEFT.setState(pressed);
+            if(id == controllerButtons.BUMPER_RIGHT.getButtonIndex()) controllerButtons.BUMPER_RIGHT.setState(pressed);
+
+            if(id == controllerButtons.EXTRA_BUTTON.getButtonIndex()) controllerButtons.EXTRA_BUTTON.setState(pressed);
+            if(id == controllerButtons.START_BUTTON.getButtonIndex()) controllerButtons.START_BUTTON.setState(pressed);
+            if(id == controllerButtons.LEFT_STICKER.getButtonIndex()) controllerButtons.LEFT_STICKER.setState(pressed);
+            if(id == controllerButtons.RIGHT_STICKER.getButtonIndex()) controllerButtons.RIGHT_STICKER.setState(pressed);
+
+            if(id == controllerButtons.DPAD_UP.getButtonIndex()) controllerButtons.DPAD_UP.setState(pressed);
+            if(id == controllerButtons.DPAD_DOWN.getButtonIndex()) controllerButtons.DPAD_DOWN.setState(pressed);
+            if(id == controllerButtons.DPAD_LEFT.getButtonIndex()) controllerButtons.DPAD_LEFT.setState(pressed);
+            if(id == controllerButtons.DPAD_RIGHT.getButtonIndex()) controllerButtons.DPAD_RIGHT.setState(pressed);
 
             buttonID++;
         }

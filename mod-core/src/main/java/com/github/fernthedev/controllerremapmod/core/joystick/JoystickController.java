@@ -1,8 +1,7 @@
 package com.github.fernthedev.controllerremapmod.core.joystick;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.github.fernthedev.controllerremapmod.mappings.Mapping;
+import lombok.*;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -16,6 +15,11 @@ public class JoystickController {
 
     @Getter
     public final int controllerIndex;
+
+    @Getter
+    @Setter
+    @NonNull
+    private Mapping mapping;
 
     /**
      * Checks if controller is connected
@@ -58,12 +62,12 @@ public class JoystickController {
     public ControllerButtons getButtons() {
         validateConnected();
 
-        return ControllerButtons.getControllerButtons(controllerIndex);
+        return ControllerButtons.getControllerButtons(controllerIndex,mapping);
     }
 
     public ControllerAxis getAxes() {
         validateConnected();
-        return ControllerAxis.getAxis(controllerIndex);
+        return ControllerAxis.getAxis(controllerIndex,mapping);
     }
 
     /**

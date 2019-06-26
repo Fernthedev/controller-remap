@@ -8,16 +8,12 @@ buildscript {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
     }
 }
-
-
-
-
-
+apply plugin: 'java'
 apply plugin: 'net.minecraftforge.gradle'
 
 
 archivesBaseName = 'controller-remap'
-
+version = "1.13.2-${modVersion}"
 
 minecraft {
     // the mappings can be changed at any time, and must be in the following format.
@@ -75,9 +71,14 @@ configurations {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.13.2-25.0.218'
-    shade project(':mod-core')
+    minecraft 'net.minecraftforge:forge:1.13.2-25.0.219'
+
+    shade(project(':mod-core')) {
+        exclude group: 'net.minecraftforge'
+    }
 }
+
+
 
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
@@ -95,11 +96,15 @@ jar {
 //        attributes "ContainedDeps": "mod-core-1.0.jar"
     }
 
-    configurations.shade.each { dep ->
-        from(project.zipTree(dep)){
-            exclude 'META-INF', 'META-INF/**'
-        }
-    }
+
+
+//    configurations.shade.each { dep ->
+//        from(project.zipTree(dep)){
+//            exclude 'META-INF', 'META-INF/**'
+//        }
+//    }
+
+    from configurations.shade.collect { it.isDirectory() ? it : zipTree(it) }
 }
 
 
