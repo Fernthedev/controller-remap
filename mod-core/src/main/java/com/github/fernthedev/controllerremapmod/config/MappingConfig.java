@@ -10,7 +10,6 @@ import okio.Okio;
 import okio.Sink;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -23,6 +22,7 @@ public class MappingConfig {
 
     private MappingConfig(File file) {
         this.file = file;
+        mapping = new XboxOneMapping();
     }
 
     public static MappingConfig loadConfig(File file) {
@@ -35,14 +35,18 @@ public class MappingConfig {
 
     public void load()  {
         if(!file.exists()) {
-            mapping = new XboxOneMapping();
             save();
         }
 
         try {
             mapping = new Gson().fromJson(new FileReader(file), GsonMapping.class);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            String map = "";
+            if(mapping != null) {
+                map = " as mapping " + mapping.getName();
+            }
+
+            new IOException("Unable to load " + file.getName() + map,e).printStackTrace();
         }
     }
 
@@ -73,5 +77,6 @@ public class MappingConfig {
 
     private File file;
     private Mapping mapping;
+
 
 }

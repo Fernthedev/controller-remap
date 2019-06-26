@@ -1,5 +1,6 @@
-package com.github.fernthedev.controllerremapmod.config;
+package com.github.fernthedev.controllerremapmod.config.toml;
 
+import com.github.fernthedev.controllerremapmod.config.SettingsConfigBase;
 import com.github.fernthedev.controllerremapmod.mappings.Mapping;
 import com.github.fernthedev.controllerremapmod.mappings.xbox.XboxOneMapping;
 import lombok.Getter;
@@ -14,11 +15,14 @@ public class TOMLSettingsConfig extends SettingsConfigBase {
 
     private ForgeConfigSpec.ConfigValue<String> selectedMappingConfig;
 
-
-
     @Getter
     private ModConfig modConfig;
 
+
+    public TOMLSettingsConfig(ForgeConfigSpec.Builder builder) {
+        super(builder);
+        build(builder);
+    }
 
 
     public void build(ForgeConfigSpec.Builder builder) {
@@ -38,38 +42,29 @@ public class TOMLSettingsConfig extends SettingsConfigBase {
 
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener((ModConfig.ModConfigEvent event) -> {
-            new RuntimeException("Got config " + event.getConfig() + " name " + event.getConfig().getModId() + ":" + event.getConfig().getFileName());
+//            new RuntimeException("Got config " + event.getConfig() + " name " + event.getConfig().getModId() + ":" + event.getConfig().getFileName());
             final ModConfig config = event.getConfig();
             if (config.getSpec() == ConfigHandler.getCLIENT_SPEC()) {
-                parseFromConfig(config);
+                load(config);
             }
         });
 
 
     }
 
-
-    @Override
-    public void parseFromConfig(Object configObject) {
-
-        this.modConfig = (ModConfig) configObject;
+    private void load(ModConfig config) {
+        this.modConfig = config;
 
         sensitivity = sensitivityConfig.get();
 
         selectedMapping = Mapping.loadFromJSON(selectedMappingConfig.get());
 
+    }
 
 
-
-
-
-//        loadedMappings = new ArrayList<>();
-//
-//        for(ForgeConfigSpec.ConfigValue<String> forgeConfigSpec : mappingListConfig) {
-//            loadedMappings.add(Mapping.loadFromJSON(forgeConfigSpec.get()));
-//        }
-
-
+    @Override
+    public void save() {
+        modConfig.save();
     }
 
     public void setAndSave(String path, Object value) {

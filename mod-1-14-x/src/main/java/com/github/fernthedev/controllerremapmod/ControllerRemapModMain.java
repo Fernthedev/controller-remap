@@ -1,15 +1,15 @@
 package com.github.fernthedev.controllerremapmod;
 
-import com.github.fernthedev.controllerremapmod.config.toml.ConfigHandler;
 import com.github.fernthedev.controllerremapmod.config.IConfigHandler;
+import com.github.fernthedev.controllerremapmod.config.toml.ConfigHandler;
 import com.github.fernthedev.controllerremapmod.core.ControllerHandler;
 import com.github.fernthedev.controllerremapmod.core.IHandler;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiChat;
-import net.minecraft.client.gui.GuiIngameMenu;
-import net.minecraft.client.gui.GuiPlayerTabOverlay;
-import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.gui.overlay.PlayerTabOverlayGui;
+import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.gui.screen.IngameMenuScreen;
+import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
@@ -119,7 +119,7 @@ public class ControllerRemapModMain implements IHandler {
 
     @Override
     public void renderPlayerList(boolean visible) {
-        GuiPlayerTabOverlay tabOverlay = Minecraft.getInstance().ingameGUI.getTabList();
+        PlayerTabOverlayGui tabOverlay = Minecraft.getInstance().ingameGUI.getTabList();
 
         if(visible) {
             int scaledWidth = Minecraft.getInstance().mainWindow.getScaledWidth();
@@ -139,7 +139,7 @@ public class ControllerRemapModMain implements IHandler {
                 tabOverlay.setVisible(false);
             } else {
                 tabOverlay.setVisible(true);
-                tabOverlay.renderPlayerlist(scaledWidth, scoreboard, scoreobjective1);
+                tabOverlay.render(scaledWidth, scoreboard, scoreobjective1);
             }
 
         }else{
@@ -149,7 +149,7 @@ public class ControllerRemapModMain implements IHandler {
 
     @Override
     public void displayChat() {
-        Minecraft.getInstance().displayGuiScreen(new GuiChat());
+        Minecraft.getInstance().displayGuiScreen(new ChatScreen(""));
     }
 
     @Override
@@ -199,16 +199,17 @@ public class ControllerRemapModMain implements IHandler {
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
+
     }
 
     @Override
     public boolean isInventory() {
-        return Minecraft.getInstance().currentScreen instanceof GuiInventory;
+        return Minecraft.getInstance().currentScreen instanceof InventoryScreen;
     }
 
     @Override
     public void openMainMenu() {
-        Minecraft.getInstance().displayGuiScreen(new GuiIngameMenu());
+        Minecraft.getInstance().displayGuiScreen(new IngameMenuScreen(true));
     }
 
     @Override

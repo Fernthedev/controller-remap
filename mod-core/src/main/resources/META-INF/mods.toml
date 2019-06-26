@@ -44,9 +44,9 @@ This allows you to use a controller to play minecraft.
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
     side="CLIENT"
 # Here's another dependency
-[[dependencies.controller-remap]]
-    modId="minecraft"
-    mandatory=true
-    versionRange="[1.13.2]"
-    ordering="NONE"
-    side="CLIENT"
+#[[dependencies.controller-remap]]
+#    modId="minecraft"
+#    mandatory=true
+#    versionRange="${mcVer}"
+#    ordering="NONE"
+#    side="BOTH"

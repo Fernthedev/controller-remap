@@ -1,6 +1,8 @@
-package com.github.fernthedev.controllerremapmod.config;
+package com.github.fernthedev.controllerremapmod.config.toml;
 
-import com.github.fernthedev.controllerremapmod.ControllerRemapModMain;
+import com.github.fernthedev.controllerremapmod.config.IConfigHandler;
+import com.github.fernthedev.controllerremapmod.config.MappingConfig;
+import com.github.fernthedev.controllerremapmod.core.IHandler;
 import lombok.Getter;
 import lombok.NonNull;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -23,41 +25,23 @@ public class ConfigHandler extends IConfigHandler {
 
     private List<MappingConfig> mappingConfigs = new ArrayList<>();
 
+    @Getter
+    private TOMLSettingsConfig settings;
 
-
-    @Override
-    public SettingsConfigBase getSettings() {
-        return settingsConfig;
-    }
-
-    @Override
-    public void setSettings(SettingsConfigBase settingsConfigBase) {
-        this.settingsConfig = (TOMLSettingsConfig) settingsConfigBase;
-    }
-
-    private TOMLSettingsConfig settingsConfig;
-
-    public ConfigHandler(File configFile) {
-        super(configFile);
-    }
-
-    @Override
-    protected SettingsConfigBase buildSettings() {
-        if(settingsConfig == null) {
-            settingsConfig = new TOMLSettingsConfig();
-        }
-        return settingsConfig;
-    }
-
-    public ConfigHandler(ControllerRemapModMain main) {
+    public ConfigHandler(IHandler main) {
         if(main == null) throw new RuntimeException("Not null");
     }
 
     @Override
     public void sync() {
-        settingsConfig.getModConfig().save();
+        save();
         reloadMappings();
 
+    }
+
+    @Override
+    protected void save() {
+        settings.getModConfig().save();
     }
 
     public void reloadMappings() {
@@ -76,16 +60,8 @@ public class ConfigHandler extends IConfigHandler {
                 if(file.isDirectory()) continue;
 
                 mappingConfigs.add(MappingConfig.loadConfig(file));
-//                ModConfig tempConfig = new ModConfig(ModConfig.Type.CLIENT,spec,(ModContainer) ControllerHandler.getHandler().getModContainer(),ControllerHandler.getHandler().getModID() + "/" + file.getName() );
-
-//                tempConfig.save();
             }
         }
-    }
-
-    @Override
-    protected void load() {
-        super.load();
     }
 
     public static ConfigHandler registerSpec() {
@@ -96,8 +72,7 @@ public class ConfigHandler extends IConfigHandler {
 
 
     private ConfigHandler(ForgeConfigSpec.Builder builder) {
-        settingsConfig = new TOMLSettingsConfig();
+        settings = new TOMLSettingsConfig(builder);
 
-        settingsConfig.build(builder);
     }
 }

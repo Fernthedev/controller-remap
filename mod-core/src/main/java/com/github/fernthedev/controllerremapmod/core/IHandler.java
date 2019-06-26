@@ -36,6 +36,4 @@ public interface IHandler {
     Path getConfigDir();
 
     IConfigHandler getConfigHandler();
-
-    Object getModContainer();
 }

@@ -1,13 +1,18 @@
 package com.github.fernthedev.controllerremapmod.core;
 
 import com.github.fernthedev.controllerremapmod.config.IConfigHandler;
-import com.github.fernthedev.controllerremapmod.config.SettingsConfigBase;
+import com.github.fernthedev.controllerremapmod.config.ISettingsConfig;
+import com.github.fernthedev.controllerremapmod.config.MappingConfig;
 import com.github.fernthedev.controllerremapmod.core.joystick.ControllerButtonState;
 import com.github.fernthedev.controllerremapmod.core.joystick.ControllerButtons;
 import com.github.fernthedev.controllerremapmod.core.joystick.JoystickController;
+import com.github.fernthedev.controllerremapmod.mappings.ps4.DS4Mapping;
+import com.github.fernthedev.controllerremapmod.mappings.xbox.XboxOneMapping;
 import lombok.Getter;
 import net.minecraft.util.MovementInput;
 import org.apache.logging.log4j.Logger;
+
+import java.io.File;
 
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 
@@ -20,7 +25,6 @@ public class ControllerHandler {
 
     @Getter
     private static IConfigHandler configHandler;
-
 
     public static void setHandler(IHandler newHandler) {
         if(handler == null) {
@@ -35,6 +39,27 @@ public class ControllerHandler {
         }else{
             throw new IllegalStateException("Handler has been set already");
         }
+    }
+
+    public static void createMappingTemplates(File dir) {
+        if(!dir.exists()) {
+            dir.mkdir();
+        }
+
+        File mapFile = new File(dir, "template.json");
+
+        MappingConfig mappingConfig = new MappingConfig(mapFile,new XboxOneMapping());
+        mappingConfig.load();
+        ///////////////////////////////////////////
+        mapFile = new File(dir, "xboxone.json");
+
+        mappingConfig = new MappingConfig(mapFile,new XboxOneMapping());
+        mappingConfig.load();
+        ////////////////////////////////////
+        mapFile = new File(dir, "dualshock4.json");
+
+        mappingConfig = new MappingConfig(mapFile,new DS4Mapping());
+        mappingConfig.load();
     }
 
     {
@@ -243,6 +268,41 @@ public class ControllerHandler {
             toggle3rdPersonButton = false;
         }
 
+        boolean resetDroptime = true;
+
+        //////////////////////////////////////////////
+        // Drops item
+        if(!handler.isGuiOpen()) {
+
+            if (controller.getButtons().getB().isState()) {
+
+                if(dropTime == 0) {
+                    player.dropItem();
+                }
+
+                if(dropTime > 30) {
+                    dropTime = 24;
+                    player.dropItem();
+                }
+
+                resetDroptime = false;
+
+//                if(dropTime > 50) {
+//                    player.dropStack();
+//                }
+
+                dropTime++;
+            }
+
+            if(resetDroptime) {
+                dropTime = 0;
+            }
+
+
+        }
+        //////////////////////////////////////////////
+
+
         oldMoveButtons = controller.getButtons();
 
 
@@ -296,39 +356,7 @@ public class ControllerHandler {
             toggleMenuButton = false;
         }
 
-        boolean resetDroptime = true;
 
-        //////////////////////////////////////////////
-        // Drops item
-        if(!handler.isGuiOpen()) {
-
-            if (controller.getButtons().getB().isState()) {
-
-                if(dropTime == 0) {
-                    player.dropItem();
-                }
-
-                if(dropTime > 30) {
-                    dropTime = 24;
-                    player.dropItem();
-                }
-
-                resetDroptime = false;
-
-//                if(dropTime > 50) {
-//                    player.dropStack();
-//                }
-
-                dropTime++;
-            }
-
-            if(resetDroptime) {
-                dropTime = 0;
-            }
-
-
-        }
-        //////////////////////////////////////////////
 
         //Closes GUI
         if(checkToggle(controller.getButtons().getB(),oldButtons.getB())) {
@@ -364,7 +392,7 @@ public class ControllerHandler {
         return value > max || value < min;
     }
 
-    private SettingsConfigBase updateSettings() {
+    private ISettingsConfig updateSettings() {
         controller.setMapping(handler.getConfigHandler().getSettings().getSelectedMapping());
         return handler.getConfigHandler().getSettings();
     }
