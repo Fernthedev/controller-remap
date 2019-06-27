@@ -1,26 +1,37 @@
 package com.github.fernthedev.controllerremapmod.config.toml;
 
+import com.github.fernthedev.controllerremapmod.config.MappingConfig;
 import com.github.fernthedev.controllerremapmod.config.SettingsConfigBase;
-import com.github.fernthedev.controllerremapmod.mappings.Mapping;
-import com.github.fernthedev.controllerremapmod.mappings.xbox.XboxOneMapping;
 import lombok.Getter;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLPaths;
+import org.apache.commons.io.FilenameUtils;
+
+import java.io.File;
+import java.util.List;
+import java.util.Objects;
 
 public class TOMLSettingsConfig extends SettingsConfigBase {
 
-    private ForgeConfigSpec.IntValue sensitivityConfig;
+    private ForgeConfigSpec.DoubleValue sensitivityConfig;
+
+    private ForgeConfigSpec.DoubleValue deadzoneLeftConfig;
+    private ForgeConfigSpec.DoubleValue deadzoneRightConfig;
 
     private ForgeConfigSpec.ConfigValue<String> selectedMappingConfig;
 
     @Getter
     private ModConfig modConfig;
 
+    private Runnable onFirstLoad;
 
-    public TOMLSettingsConfig(ForgeConfigSpec.Builder builder) {
+
+    public TOMLSettingsConfig(ForgeConfigSpec.Builder builder, Runnable onFirstLoad) {
         super(builder);
+        this.onFirstLoad = onFirstLoad;
         build(builder);
     }
 
@@ -28,9 +39,13 @@ public class TOMLSettingsConfig extends SettingsConfigBase {
     public void build(ForgeConfigSpec.Builder builder) {
         builder.push(MAIN_CATEGORY);
 
-        sensitivityConfig = builder.comment("The sensitivity of the controller").defineInRange("sensitivity",1,-3,-3);
+        sensitivityConfig = builder.comment("The sensitivity of the controller").defineInRange("sensitivity",1.0,0.01,5.0);
 
-        selectedMappingConfig = builder.comment("The controller mapping that should be used").define("selectedmapping",new XboxOneMapping().toJson());
+        deadzoneLeftConfig = builder.comment("The deadzone of the left stick").defineInRange("deadzoneLeft",0.15,0.01,1);
+        deadzoneRightConfig = builder.comment("The deadzone of the right stick").defineInRange("deadzoneRight",0.15,0.01,1);
+
+
+        selectedMappingConfig = builder.comment("The controller mapping that should be used").define("selectedmapping","xboxone");
 
 
 
@@ -42,14 +57,17 @@ public class TOMLSettingsConfig extends SettingsConfigBase {
 
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener((ModConfig.ModConfigEvent event) -> {
-//            new RuntimeException("Got config " + event.getConfig() + " name " + event.getConfig().getModId() + ":" + event.getConfig().getFileName());
+            new RuntimeException("Got config " + event.getConfig() + " name " + event.getConfig().getModId() + ":" + event.getConfig().getFileName());
             final ModConfig config = event.getConfig();
             if (config.getSpec() == ConfigHandler.getCLIENT_SPEC()) {
                 load(config);
             }
+
+            if(onFirstLoad != null) {
+                onFirstLoad.run();
+                onFirstLoad = null;
+            }
         });
-
-
     }
 
     private void load(ModConfig config) {
@@ -57,17 +75,61 @@ public class TOMLSettingsConfig extends SettingsConfigBase {
 
         sensitivity = sensitivityConfig.get();
 
-        selectedMapping = Mapping.loadFromJSON(selectedMappingConfig.get());
+        deadzoneLeft = deadzoneLeftConfig.get();
+        deadzoneRight = deadzoneLeftConfig.get();
 
+        reloadMappings();
     }
 
+    public void reloadMappings() {
+        loadedMappingList.clear();
+        File dir = new File(FMLPaths.CONFIGDIR.get().toFile(),"mappings");
+
+        if(!dir.exists()) {
+            dir.mkdir();
+        }
+
+        String fileMapping = selectedMappingConfig.get();
+
+        if(dir.isDirectory() && dir.listFiles() != null) {
+
+
+            for (File file : Objects.requireNonNull(dir.listFiles())) {
+                if(!FilenameUtils.isExtension(file.getName(),"mapping")) continue;
+
+                if(FilenameUtils.removeExtension(file.getName()).equalsIgnoreCase("template")) continue;
+
+                if(file.isDirectory()) continue;
+
+                MappingConfig config = MappingConfig.loadConfig(file);
+
+                if(FilenameUtils.removeExtension(file.getName()).equalsIgnoreCase(fileMapping)) {
+                    selectedMapping = config;
+                }
+
+                loadedMappingList.add(config);
+            }
+        }
+    }
 
     @Override
     public void save() {
-        modConfig.save();
+        setAndSave(sensitivityConfig.getPath(),sensitivity);
+        setAndSave(selectedMappingConfig.getPath(),FilenameUtils.removeExtension(selectedMapping.getFile().getName()));
+    }
+
+    @Override
+    public void sync() {
+        save();
+        reloadMappings();
     }
 
     public void setAndSave(String path, Object value) {
+        modConfig.getConfigData().set(path,value);
+        modConfig.save();
+    }
+
+    public void setAndSave(List<String> path, Object value) {
         modConfig.getConfigData().set(path,value);
         modConfig.save();
     }

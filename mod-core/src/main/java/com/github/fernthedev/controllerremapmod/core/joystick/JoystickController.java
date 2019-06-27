@@ -1,6 +1,7 @@
 package com.github.fernthedev.controllerremapmod.core.joystick;
 
 import com.github.fernthedev.controllerremapmod.mappings.Mapping;
+import com.google.gson.Gson;
 import lombok.*;
 
 import java.nio.ByteBuffer;
@@ -94,5 +95,7 @@ public class JoystickController {
 
     private void validateConnected() {
         if(!isConnected()) throw new IllegalStateException("Controller is not connected, check using isConnected() method.");
+
+
     }
 }

@@ -3,6 +3,7 @@ package com.github.fernthedev.controllerremapmod.core;
 import com.github.fernthedev.controllerremapmod.config.IConfigHandler;
 import com.github.fernthedev.controllerremapmod.config.ISettingsConfig;
 import com.github.fernthedev.controllerremapmod.config.MappingConfig;
+import com.github.fernthedev.controllerremapmod.config.ui.IConfigGUI;
 import com.github.fernthedev.controllerremapmod.core.joystick.ControllerButtonState;
 import com.github.fernthedev.controllerremapmod.core.joystick.ControllerButtons;
 import com.github.fernthedev.controllerremapmod.core.joystick.JoystickController;
@@ -33,12 +34,15 @@ public class ControllerHandler {
 
             configHandler = handler.getConfigHandler();
 
-            handler.getLogger().debug("The controller mapping is " + configHandler.getSettings());
-
-            controller = new JoystickController(0,configHandler.getSettings().getSelectedMapping());
         }else{
             throw new IllegalStateException("Handler has been set already");
         }
+    }
+
+    public void init() {
+        handler.getLogger().debug("The controller mapping is " + configHandler.getSettings());
+
+        controller = new JoystickController(0, configHandler.getSettings().getSelectedMapping().getMapping());
     }
 
     public static void createMappingTemplates(File dir) {
@@ -46,17 +50,17 @@ public class ControllerHandler {
             dir.mkdir();
         }
 
-        File mapFile = new File(dir, "template.json");
+        File mapFile = new File(dir, "template.mapping");
 
         MappingConfig mappingConfig = new MappingConfig(mapFile,new XboxOneMapping());
         mappingConfig.load();
         ///////////////////////////////////////////
-        mapFile = new File(dir, "xboxone.json");
+        mapFile = new File(dir, "xboxone.mapping");
 
         mappingConfig = new MappingConfig(mapFile,new XboxOneMapping());
         mappingConfig.load();
         ////////////////////////////////////
-        mapFile = new File(dir, "dualshock4.json");
+        mapFile = new File(dir, "dualshock4.mapping");
 
         mappingConfig = new MappingConfig(mapFile,new DS4Mapping());
         mappingConfig.load();
@@ -258,6 +262,11 @@ public class ControllerHandler {
             toggleChatButton = false;
         }
 
+        //Basically does (Minecraft.getMinecraft().displayGuiScreen(new GuiChat());)
+        if(controller.getButtons().getDPAD_DOWN().isState() && !(handler.getGui() instanceof IConfigGUI)) {
+            handler.displayOptions();
+        }
+
         if(controller.getButtons().getRIGHT_STICKER().isState()) {
             if(!toggle3rdPersonButton) {
                 toggle3rdPersonButton = true;
@@ -393,7 +402,7 @@ public class ControllerHandler {
     }
 
     private ISettingsConfig updateSettings() {
-        controller.setMapping(handler.getConfigHandler().getSettings().getSelectedMapping());
+        controller.setMapping(handler.getConfigHandler().getSettings().getSelectedMapping().getMapping());
         return handler.getConfigHandler().getSettings();
     }
 }

@@ -22,12 +22,7 @@ public abstract class IConfigHandler {
 
    public abstract ISettingsConfig getSettings();
 
-   protected IConfigHandler() {
-    }
-
-    protected abstract void sync();
-
-   protected abstract void save();
+   protected IConfigHandler() {}
 
 
 }
