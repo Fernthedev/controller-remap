@@ -1,5 +1,6 @@
 package com.github.fernthedev.controllerremapmod.core.joystick;
 
+import com.github.fernthedev.controllerremapmod.core.ControllerHandler;
 import com.github.fernthedev.controllerremapmod.mappings.Mapping;
 import lombok.Data;
 import lombok.Getter;
@@ -16,8 +17,12 @@ import static org.lwjgl.glfw.GLFW.glfwGetJoystickButtons;
 //@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ControllerButtons {
 
-    @NonNull
+
     private Mapping mapping;
+
+    private ControllerButtons(@NonNull Mapping mapping) {
+        this.mapping = mapping;
+    }
 
     private ControllerButtonState A;
     private ControllerButtonState B;
@@ -58,7 +63,6 @@ public class ControllerButtons {
         DPAD_DOWN = new ControllerButtonState(mapping.getButtonMapping().getDPAD_DOWN());
         DPAD_LEFT = new ControllerButtonState(mapping.getButtonMapping().getDPAD_LEFT());
 
-
     }
 
     public static ControllerButtons getControllerButtons(int controllerIndex, @NonNull Mapping mapping) {
@@ -94,6 +98,10 @@ public class ControllerButtons {
             if(id == controllerButtons.DPAD_DOWN.getButtonIndex()) controllerButtons.DPAD_DOWN.setState(pressed);
             if(id == controllerButtons.DPAD_LEFT.getButtonIndex()) controllerButtons.DPAD_LEFT.setState(pressed);
             if(id == controllerButtons.DPAD_RIGHT.getButtonIndex()) controllerButtons.DPAD_RIGHT.setState(pressed);
+
+            if (pressed) {
+                ControllerHandler.getLogger().info(id + " was pressed");
+            }
 
             buttonID++;
         }

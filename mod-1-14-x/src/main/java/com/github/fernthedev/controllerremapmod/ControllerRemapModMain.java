@@ -4,17 +4,18 @@ import com.github.fernthedev.controllerremapmod.config.IConfigHandler;
 import com.github.fernthedev.controllerremapmod.config.toml.ConfigHandler;
 import com.github.fernthedev.controllerremapmod.core.ControllerHandler;
 import com.github.fernthedev.controllerremapmod.core.IHandler;
+import com.github.fernthedev.controllerremapmod.gui.ConfigGUI;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.overlay.PlayerTabOverlayGui;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.IngameMenuScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -61,28 +62,27 @@ public class ControllerRemapModMain implements IHandler {
 //        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
         // Register the doClientStuff method for modloading
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
-
-
-        // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(new MyEventHandler(this));
-
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
 
         final ModLoadingContext modLoadingContext = ModLoadingContext.get();
         logger.info("Registering config");
 
-        configHandler = ConfigHandler.registerSpec();
+        configHandler = ConfigHandler.registerSpec(() -> {
+            controllerHandler.init();
+            // Register ourselves for server and other game events we are interested in
 
-        modLoadingContext.registerConfig(ModConfig.Type.CLIENT,ConfigHandler.getCLIENT_SPEC());
+        });
+
 
         File dir = new File(getConfigDir().toFile(),"mappings");
 
         ControllerHandler.createMappingTemplates(dir);
 
+        modLoadingContext.registerConfig(ModConfig.Type.CLIENT,ConfigHandler.getCLIENT_SPEC());
+
+
+
         ControllerHandler.setHandler(this);
-
-
 
     }
 
@@ -92,7 +92,7 @@ public class ControllerRemapModMain implements IHandler {
     private void setup(final FMLCommonSetupEvent e) {
         // some preinit code
         minecraftClass = Minecraft.getInstance().getClass();
-
+        controllerHandler.init();
 
     }
 
@@ -234,6 +234,16 @@ public class ControllerRemapModMain implements IHandler {
             configHandler = new ConfigHandler(this);
         }
         return configHandler;
+    }
+
+    @Override
+    public Screen getGui() {
+        return Minecraft.getInstance().currentScreen;
+    }
+
+    @Override
+    public void displayOptions() {
+        Minecraft.getInstance().displayGuiScreen(new ConfigGUI(configHandler.getSettings().getLoadedMappingList()));
     }
 
     public ModContainer getModContainer() {

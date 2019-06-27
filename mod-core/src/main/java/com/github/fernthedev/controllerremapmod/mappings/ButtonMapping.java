@@ -38,6 +38,6 @@ public interface ButtonMapping {
     }
 
     default GsonButtonMapping toGson() {
-        return new Gson().fromJson(toJson(),GsonButtonMapping.class);
+        return new Gson().fromJson(toJson(), GsonButtonMapping.class);
     }
 }
