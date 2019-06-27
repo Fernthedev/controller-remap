@@ -36,4 +36,8 @@ public interface IHandler {
     Path getConfigDir();
 
     IConfigHandler getConfigHandler();
+
+    Object getGui();
+
+    void displayOptions();
 }

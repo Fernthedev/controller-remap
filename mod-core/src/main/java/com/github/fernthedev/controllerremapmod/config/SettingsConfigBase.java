@@ -1,10 +1,13 @@
 package com.github.fernthedev.controllerremapmod.config;
 
-import com.github.fernthedev.controllerremapmod.mappings.Mapping;
-import com.github.fernthedev.controllerremapmod.mappings.xbox.XboxOneMapping;
 import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import net.minecraftforge.common.ForgeConfigSpec;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @RequiredArgsConstructor
@@ -17,8 +20,19 @@ public abstract class SettingsConfigBase implements ISettingsConfig {
 
     public static final String MAPPING_CATEGORY = "Mapping";
 
+    @Setter
     protected double sensitivity = 1.0;
-    protected Mapping selectedMapping = new XboxOneMapping();
 
-    public abstract void save();
+
+    @Setter
+    protected double deadzoneLeft, deadzoneRight;
+
+    @Setter
+    protected MappingConfig selectedMapping;
+
+    @Getter
+    protected List<MappingConfig> loadedMappingList = new ArrayList<>();
+
+
+
 }

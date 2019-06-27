@@ -1,19 +1,25 @@
 package com.github.fernthedev.controllerremapmod.config;
 
 import com.github.fernthedev.controllerremapmod.mappings.Mapping;
-import com.github.fernthedev.controllerremapmod.mappings.gson.GsonMapping;
 import com.github.fernthedev.controllerremapmod.mappings.xbox.XboxOneMapping;
 import com.google.gson.Gson;
+import lombok.Data;
 import lombok.NonNull;
 import okio.BufferedSink;
 import okio.Okio;
 import okio.Sink;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 
+@Data
 public class MappingConfig {
+
+
+    private File file;
+
+
+    private Mapping mapping;
 
     public MappingConfig(File file,@NonNull Mapping mapping) {
         this(file);
@@ -39,7 +45,9 @@ public class MappingConfig {
         }
 
         try {
-            mapping = new Gson().fromJson(new FileReader(file), GsonMapping.class);
+            mapping = Mapping.loadFromFile(file);
+
+
         } catch (Exception e) {
             String map = "";
             if(mapping != null) {
@@ -75,8 +83,7 @@ public class MappingConfig {
         load();
     }
 
-    private File file;
-    private Mapping mapping;
+
 
 
 }

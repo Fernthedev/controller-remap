@@ -50,6 +50,6 @@ public interface AxesMapping {
     }
 
     default GsonAxeMapping toGson() {
-        return new Gson().fromJson(toJson(),GsonAxeMapping.class);
+        return new Gson().fromJson(toJson(), GsonAxeMapping.class);
     }
 }
