@@ -19,7 +19,6 @@ public class ConfigHandler extends IConfigHandler {
     @Getter
     private static List<ForgeConfigSpec> loadedMappingSpecList = new ArrayList<>();
 
-
     @Getter
     private TOMLSettingsConfig settings;
 

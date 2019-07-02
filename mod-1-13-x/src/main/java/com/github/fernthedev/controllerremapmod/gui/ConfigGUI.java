@@ -5,6 +5,7 @@ import com.github.fernthedev.controllerremapmod.config.MappingConfig;
 import com.github.fernthedev.controllerremapmod.config.ui.IConfigGUI;
 import com.github.fernthedev.controllerremapmod.core.ControllerHandler;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.GuiSlider;
 
 import java.util.ArrayList;
@@ -17,6 +18,18 @@ public class ConfigGUI extends GuiScreen implements IConfigGUI {
     private GuiSlider deadzoneLeft;
     private GuiSlider deadzoneRight;
     private GuiTextSlider mappingListSlider;
+
+    private GuiSlider scrollSpeed;
+    private GuiSlider dropSpeed;
+
+    private GuiButtonExt reloadMappings;
+
+    private int id = 0;
+    private int getId() {
+        int oldId = id;
+        id++;
+        return oldId;
+    }
 
     private static final String mappingFormat = "Mapping (Controller Layout) : %mapping%";
 
@@ -43,8 +56,20 @@ public class ConfigGUI extends GuiScreen implements IConfigGUI {
 
         int scaledHeight = height / 4 + 48;
 
+        // Scroll speed speed
+        scrollSpeed = new GuiSlider(getId(),width / 2 - 100, scaledHeight + 112 + 20, "Scroll Speed (Ticks): ", 1, 100, settings.getScrollSpeed(), slider -> {
+            settings.setScrollSpeed(scrollSpeed.getValueInt());
+            settings.sync();
+        });
+
+        // Drop speed slider
+        dropSpeed = new GuiSlider(getId(),width / 2 - 100, scaledHeight + 92 + 20, "Drop Speed (Ticks): ", 1, 100, settings.getDropSpeed(), slider -> {
+            settings.setDropSpeed(dropSpeed.getValueInt());
+            settings.sync();
+        });
+
         // Sensitivity bar
-        sensitivity = new GuiSlider(0, width / 2 - 100, scaledHeight + 72 + 20, "Sensitivity", 0.01, 5, settings.getSensitivity(), slider -> {
+        sensitivity = new GuiSlider(getId(), width / 2 - 100, scaledHeight + 72 + 20, "Sensitivity", 0.01, 5, settings.getSensitivity(), slider -> {
             settings.setSensitivity(sensitivity.getValue());
             settings.sync();
         });
@@ -84,15 +109,28 @@ public class ConfigGUI extends GuiScreen implements IConfigGUI {
 
 
         //Deadzone sliders
-        deadzoneLeft = new GuiSlider(0, width / 2 - 100, scaledHeight + 32 + 20, "Deadzone Left Stick: ", 0.01, 1, settings.getDeadzoneLeft(), slider -> {
+        deadzoneLeft = new GuiSlider(getId(), width / 2 - 100, scaledHeight + 32 + 20, "Deadzone Left Stick: ", 0.01, 1, settings.getDeadzoneLeft(), slider -> {
             settings.setDeadzoneLeft(deadzoneLeft.getValue());
             settings.sync();
         });
 
-        deadzoneRight = new GuiSlider(0, width / 2 - 100, scaledHeight + 12 + 20, "Deadzone Right Stick: ", 0.01, 1, settings.getDeadzoneRight(), slider -> {
+        deadzoneRight = new GuiSlider(getId(), width / 2 - 100, scaledHeight + 12 + 20, "Deadzone Right Stick: ", 0.01, 1, settings.getDeadzoneRight(), slider -> {
             settings.setDeadzoneRight(deadzoneRight.getValue());
             settings.sync();
         });
+
+        reloadMappings = new GuiButtonExt(getId(), width / 2 - 100, scaledHeight + (- 28) + 20, "Reload Mapping") {
+            /**
+             * Called when the left mouse button is pressed over this button. This method is specific to GuiButton.
+             */
+            @Override
+            public void onClick(double mouseX, double mouseY) {
+                settings.sync();
+                super.onClick(mouseX,mouseY);
+            }
+        };
+
+
 
 //        if(mapFiles != null) {
 //            List<Mapping> mappingList = new ArrayList<>();
@@ -120,6 +158,10 @@ public class ConfigGUI extends GuiScreen implements IConfigGUI {
         addButton(mappingListSlider);
         addButton(deadzoneLeft);
         addButton(deadzoneRight);
+        addButton(scrollSpeed);
+        addButton(dropSpeed);
+        addButton(reloadMappings);
+
 
         super.initGui();
     }

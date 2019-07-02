@@ -28,4 +28,6 @@ public interface IControlPlayer {
     boolean isCreative();
 
     boolean isFlying();
+
+    void setSprinting(boolean sprint);
 }

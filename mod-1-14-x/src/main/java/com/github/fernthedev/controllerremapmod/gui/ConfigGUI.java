@@ -6,6 +6,7 @@ import com.github.fernthedev.controllerremapmod.config.ui.IConfigGUI;
 import com.github.fernthedev.controllerremapmod.core.ControllerHandler;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.GuiSlider;
 
 import java.util.ArrayList;
@@ -17,6 +18,11 @@ public class ConfigGUI extends Screen implements IConfigGUI {
     private GuiTextSlider mappingListSlider;
     private GuiSlider deadzoneLeft;
     private GuiSlider deadzoneRight;
+
+    private GuiSlider scrollSpeed;
+    private GuiSlider dropSpeed;
+
+    private GuiButtonExt reloadMappings;
 
     private static final String mappingFormat = "Mapping (Controller Layout) : %mapping%";
 
@@ -43,6 +49,18 @@ public class ConfigGUI extends Screen implements IConfigGUI {
         settings.sync();
 
         int scaledHeight = height / 4 + 48;
+
+        // Scroll speed speed
+        scrollSpeed = new GuiSlider(width / 2 - 100, scaledHeight + 112 + 20, "Scroll Speed (Ticks): ", 1, 100, settings.getScrollSpeed(),null, slider -> {
+            settings.setScrollSpeed(scrollSpeed.getValueInt());
+            settings.sync();
+        });
+
+        // Drop speed slider
+        dropSpeed = new GuiSlider(width / 2 - 100, scaledHeight + 92 + 20, "Drop Speed (Ticks): ", 1, 100, settings.getDropSpeed(),null, slider -> {
+            settings.setDropSpeed(dropSpeed.getValueInt());
+            settings.sync();
+        });
 
         // Sensitivity bar
         sensitivity = new GuiSlider(width / 2 - 100, scaledHeight + 72 + 20, "Sensitivity", 0.01, 5, settings.getSensitivity(),null, slider -> {
@@ -92,6 +110,10 @@ public class ConfigGUI extends Screen implements IConfigGUI {
             settings.sync();
         });
 
+        reloadMappings = new GuiButtonExt(width / 2 - 100, scaledHeight + (- 28) + 20, 150, 20, "Reload Mapping", button -> {
+            settings.sync();
+        });
+
 //        if(mapFiles != null) {
 //            List<Mapping> mappingList = new ArrayList<>();
 //
@@ -118,6 +140,9 @@ public class ConfigGUI extends Screen implements IConfigGUI {
         addButton(mappingListSlider);
         addButton(deadzoneLeft);
         addButton(deadzoneRight);
+        addButton(scrollSpeed);
+        addButton(dropSpeed);
+        addButton(reloadMappings);
 
 
         super.init();
