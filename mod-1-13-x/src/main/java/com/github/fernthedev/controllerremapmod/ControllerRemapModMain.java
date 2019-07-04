@@ -111,7 +111,8 @@ public class ControllerRemapModMain implements IHandler {
 
     @Override
     public void closeGUI() {
-        Minecraft.getInstance().displayGuiScreen(null);
+        if(Minecraft.getInstance().currentScreen != null)
+            Minecraft.getInstance().currentScreen.close();
     }
 
 
@@ -240,7 +241,7 @@ public class ControllerRemapModMain implements IHandler {
 
     @Override
     public void displayOptions() {
-        Minecraft.getInstance().displayGuiScreen(new ConfigGUI(configHandler.getSettings().getLoadedMappingList()));
+        Minecraft.getInstance().displayGuiScreen(new ConfigGUI(configHandler.getSettings().getLoadedMappingList(),Minecraft.getInstance().currentScreen));
     }
 
 }

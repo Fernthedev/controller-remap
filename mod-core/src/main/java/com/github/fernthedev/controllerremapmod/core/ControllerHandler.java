@@ -26,6 +26,7 @@ public class ControllerHandler {
 
     @Getter
     private static IConfigHandler configHandler;
+    private int maxDropTime;
 
     public static void setHandler(IHandler newHandler) {
         if(handler == null) {
@@ -120,7 +121,7 @@ public class ControllerHandler {
             }
 
             if(!player.isFlying()) {
-                if (controller.getButtons().getLEFT_STICKER().isState()) {
+                if (controller.getButtons().getRIGHT_STICKER().isState()) {
 
                     if (!sneakToggleButton) {
                         sneakToggleButton = true;
@@ -138,10 +139,11 @@ public class ControllerHandler {
                 if (this.sneak) {
                     event.moveStrafe = (float) ((double) event.moveStrafe * 0.3D);
                     event.moveForward = (float) ((double) event.moveForward * 0.3D);
+                    player.setSprinting(false);
                 }
             }else{
-                if(controller.getButtons().getLEFT_STICKER().isState()) {
-                    event.sneak = controller.getButtons().getLEFT_STICKER().isState();
+                if(controller.getButtons().getRIGHT_STICKER().isState()) {
+                    event.sneak = controller.getButtons().getRIGHT_STICKER().isState();
                 }
             }
 
@@ -267,7 +269,7 @@ public class ControllerHandler {
             handler.displayOptions();
         }
 
-        if(controller.getButtons().getRIGHT_STICKER().isState()) {
+        if(controller.getButtons().getLEFT_STICKER().isState()) {
             if(!toggle3rdPersonButton) {
                 toggle3rdPersonButton = true;
                 //Basically Minecraft.getInstance().gameSettings.thirdPersonView++;
@@ -289,8 +291,8 @@ public class ControllerHandler {
                     player.dropItem();
                 }
 
-                if(dropTime > 30) {
-                    dropTime = 24;
+                if(dropTime > maxDropTime + 6) {
+                    dropTime = maxDropTime;
                     player.dropItem();
                 }
 
@@ -322,6 +324,8 @@ public class ControllerHandler {
 
 
     public void render(IControlPlayer player) {
+        glfwPollEvents();
+        if(!controller.isConnected()) return;
         if(!handler.isGuiOpen()) {
 
             double deadzoneAmount = 0.3;
@@ -403,6 +407,9 @@ public class ControllerHandler {
 
     private ISettingsConfig updateSettings() {
         controller.setMapping(handler.getConfigHandler().getSettings().getSelectedMapping().getMapping());
+        maxScrollTime = configHandler.getSettings().getScrollSpeed();
+        maxDropTime = configHandler.getSettings().getDropSpeed();
+
         return handler.getConfigHandler().getSettings();
     }
 }

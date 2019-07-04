@@ -17,6 +17,12 @@ public interface ISettingsConfig {
     double getDeadzoneLeft();
     double getDeadzoneRight();
 
+    int getScrollSpeed();
+    void setScrollSpeed(int scrollSpeed);
+
+    int getDropSpeed();
+    void setDropSpeed(int dropSpeed);
+
     void save();
 
     void sync();

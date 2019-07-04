@@ -19,8 +19,8 @@ public class DS4AxeMapping implements AxesMapping {
 
     private final int HORIZONTAL_LEFT_STICKER = 0;
     private final int VERTICAL_LEFT_STICKER = 1;
-    private final int VERTICAL_RIGHT_STICKER = 5;
-    private final int HORIZONTAL_RIGHT_STICKER = 2;
+    private final int VERTICAL_RIGHT_STICKER = 2;
+    private final int HORIZONTAL_RIGHT_STICKER = 5;
     private final int LEFT_TRIGGER = 3;
     private final int RIGHT_TRIGGER = 4;
 

@@ -21,6 +21,9 @@ public class TOMLSettingsConfig extends SettingsConfigBase {
     private ForgeConfigSpec.DoubleValue deadzoneLeftConfig;
     private ForgeConfigSpec.DoubleValue deadzoneRightConfig;
 
+    private ForgeConfigSpec.IntValue dropSpeedConfig;
+    private ForgeConfigSpec.IntValue scrollSpeedConfig;
+
     private ForgeConfigSpec.ConfigValue<String> selectedMappingConfig;
 
     @Getter
@@ -45,8 +48,10 @@ public class TOMLSettingsConfig extends SettingsConfigBase {
         deadzoneRightConfig = builder.comment("The deadzone of the right stick").defineInRange("deadzoneRight",0.15,0.01,1);
 
 
-        selectedMappingConfig = builder.comment("The controller mapping that should be used").define("selectedmapping","xboxone");
+        selectedMappingConfig = builder.comment("The controller mapping that should be used").define("selectedMapping","xboxone");
 
+        scrollSpeedConfig = builder.comment("The speed which bumpers scroll between hotbar").defineInRange("scrollSpeed",6,1,100);
+        dropSpeedConfig = builder.comment("The speed which button (B) drops items.").defineInRange("dropSpeed",24,1,100);
 
 
         builder.pop();
@@ -76,7 +81,10 @@ public class TOMLSettingsConfig extends SettingsConfigBase {
         sensitivity = sensitivityConfig.get();
 
         deadzoneLeft = deadzoneLeftConfig.get();
-        deadzoneRight = deadzoneLeftConfig.get();
+        deadzoneRight = deadzoneRightConfig.get();
+
+        scrollSpeed = scrollSpeedConfig.get();
+        dropSpeed = dropSpeedConfig.get();
 
         reloadMappings();
     }
@@ -103,11 +111,11 @@ public class TOMLSettingsConfig extends SettingsConfigBase {
 
                 MappingConfig config = MappingConfig.loadConfig(file);
 
+                loadedMappingList.add(config);
+
                 if(FilenameUtils.removeExtension(file.getName()).equalsIgnoreCase(fileMapping)) {
                     selectedMapping = config;
                 }
-
-                loadedMappingList.add(config);
             }
         }
     }
