@@ -18,14 +18,14 @@ public abstract class SettingsConfigBase implements ISettingsConfig {
     public static final String MAIN_CATEGORY = "Controller";
 
 
-    public static final String MAPPING_CATEGORY = "Mapping";
-
     @Setter
     protected double sensitivity = 1.0;
 
-
     @Setter
     protected double deadzoneLeft, deadzoneRight;
+
+    @Setter
+    protected int scrollSpeed, dropSpeed;
 
     @Setter
     protected MappingConfig selectedMapping;

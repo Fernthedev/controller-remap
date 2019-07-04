@@ -82,4 +82,9 @@ public class ControlPlayer implements IControlPlayer {
     public boolean isFlying() {
         return player.abilities.isFlying;
     }
+
+    @Override
+    public void setSprinting(boolean sprint) {
+        player.setSprinting(sprint);
+    }
 }
