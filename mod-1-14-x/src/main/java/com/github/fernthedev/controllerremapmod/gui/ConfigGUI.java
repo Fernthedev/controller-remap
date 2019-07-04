@@ -4,16 +4,19 @@ import com.github.fernthedev.controllerremapmod.config.ISettingsConfig;
 import com.github.fernthedev.controllerremapmod.config.MappingConfig;
 import com.github.fernthedev.controllerremapmod.config.ui.IConfigGUI;
 import com.github.fernthedev.controllerremapmod.core.ControllerHandler;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.GuiSlider;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigGUI extends Screen implements IConfigGUI {
 
+    private final Screen parent;
     private GuiSlider sensitivity;
     private GuiTextSlider mappingListSlider;
     private GuiSlider deadzoneLeft;
@@ -23,12 +26,22 @@ public class ConfigGUI extends Screen implements IConfigGUI {
     private GuiSlider dropSpeed;
 
     private GuiButtonExt reloadMappings;
+    private GuiButtonExt doneButton;
+
+    private int maxY;
+
+    private int getButtonY() {
+        maxY += 24;
+        return maxY;
+    }
 
     private static final String mappingFormat = "Mapping (Controller Layout) : %mapping%";
 
-    public ConfigGUI(List<MappingConfig> mappingList) {
+    public ConfigGUI(List<MappingConfig> mappingList, @Nullable Screen parent) {
         super(new TranslationTextComponent("controllerremapper.gui.config"));
         this.mappingList = new ArrayList<>(mappingList);
+        this.parent = parent;
+        minecraft = Minecraft.getInstance();
     }
 
     private String formattedMapping() {
@@ -49,27 +62,29 @@ public class ConfigGUI extends Screen implements IConfigGUI {
         settings.sync();
 
         int scaledHeight = height / 4 + 48;
+        maxY = scaledHeight + (- 28);
+
 
         // Scroll speed speed
-        scrollSpeed = new GuiSlider(width / 2 - 100, scaledHeight + 112 + 20, "Scroll Speed (Ticks): ", 1, 100, settings.getScrollSpeed(),null, slider -> {
+        scrollSpeed = new GuiSlider(width / 2 - 100, getButtonY(), "Scroll Speed (Ticks): ", 1, 100, settings.getScrollSpeed(),null, slider -> {
             settings.setScrollSpeed(scrollSpeed.getValueInt());
             settings.sync();
         });
 
         // Drop speed slider
-        dropSpeed = new GuiSlider(width / 2 - 100, scaledHeight + 92 + 20, "Drop Speed (Ticks): ", 1, 100, settings.getDropSpeed(),null, slider -> {
+        dropSpeed = new GuiSlider(width / 2 - 100, getButtonY(), "Drop Speed (Ticks): ", 1, 100, settings.getDropSpeed(),null, slider -> {
             settings.setDropSpeed(dropSpeed.getValueInt());
             settings.sync();
         });
 
         // Sensitivity bar
-        sensitivity = new GuiSlider(width / 2 - 100, scaledHeight + 72 + 20, "Sensitivity", 0.01, 5, settings.getSensitivity(),null, slider -> {
+        sensitivity = new GuiSlider(width / 2 - 100, getButtonY(), "Sensitivity", 0.01, 5, settings.getSensitivity(),null, slider -> {
             settings.setSensitivity(sensitivity.getValue());
             settings.sync();
         });
 
         int sliderX = width / 2 - 100;
-        int sliderY = scaledHeight + 52 + 20;
+        int sliderY = getButtonY();
         // Mapping picker
         if(!mappingList.isEmpty()) {
             int curIndex = settings.getLoadedMappingList().indexOf(
@@ -91,6 +106,8 @@ public class ConfigGUI extends Screen implements IConfigGUI {
 
 
             });
+
+            mappingListSlider.setValue(curIndex);
         } else {
             mappingListSlider = new GuiTextSlider(sliderX, sliderY, formattedMapping(), 0, 0, 0,null, null);
             mappingListSlider.active = false;
@@ -100,19 +117,25 @@ public class ConfigGUI extends Screen implements IConfigGUI {
         mappingListSlider.setMessage(formattedMapping());
 
         //Deadzone sliders
-        deadzoneLeft = new GuiSlider(width / 2 - 100, scaledHeight + 32 + 20, "Deadzone Left Stick: ", 0.01, 1, settings.getDeadzoneLeft(), null, slider -> {
+        deadzoneLeft = new GuiSlider(width / 2 - 100, getButtonY(), "Deadzone Left Stick: ", 0.01, 1, settings.getDeadzoneLeft(), null, slider -> {
             settings.setDeadzoneLeft(deadzoneLeft.getValue());
             settings.sync();
         });
 
-        deadzoneRight = new GuiSlider(width / 2 - 100, scaledHeight + 12 + 20, "Deadzone Right Stick: ", 0.01, 1,  settings.getDeadzoneRight(), null, slider -> {
+        deadzoneRight = new GuiSlider(width / 2 - 100, getButtonY(), "Deadzone Right Stick: ", 0.01, 1,  settings.getDeadzoneRight(), null, slider -> {
             settings.setDeadzoneRight(deadzoneRight.getValue());
             settings.sync();
         });
 
-        reloadMappings = new GuiButtonExt(width / 2 - 100, scaledHeight + (- 28) + 20, 150, 20, "Reload Mapping", button -> {
+        reloadMappings = new GuiButtonExt(width / 2 - 100, getButtonY(), 150, 20, "Reload Mapping", button -> {
             settings.sync();
         });
+
+
+        // Exit menu/Done button
+        doneButton = new GuiButtonExt(width / 2 - 100, getButtonY() + 24, 150, 20, "Done", button -> onClose());
+
+
 
 //        if(mapFiles != null) {
 //            List<Mapping> mappingList = new ArrayList<>();
@@ -136,6 +159,7 @@ public class ConfigGUI extends Screen implements IConfigGUI {
 //            mappingListSlider.enabled = false;
 //        }
 
+        addButton(doneButton);
         addButton(sensitivity);
         addButton(mappingListSlider);
         addButton(deadzoneLeft);
@@ -161,4 +185,8 @@ public class ConfigGUI extends Screen implements IConfigGUI {
         super.render(mouseX, mouseY, partialTicks);
     }
 
+    @Override
+    public void onClose() {
+        minecraft.displayGuiScreen(parent);
+    }
 }

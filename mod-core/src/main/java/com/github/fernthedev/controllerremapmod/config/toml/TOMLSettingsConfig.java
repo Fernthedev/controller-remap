@@ -111,11 +111,11 @@ public class TOMLSettingsConfig extends SettingsConfigBase {
 
                 MappingConfig config = MappingConfig.loadConfig(file);
 
+                loadedMappingList.add(config);
+
                 if(FilenameUtils.removeExtension(file.getName()).equalsIgnoreCase(fileMapping)) {
                     selectedMapping = config;
                 }
-
-                loadedMappingList.add(config);
             }
         }
     }
