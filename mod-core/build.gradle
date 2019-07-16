@@ -8,6 +8,7 @@ buildscript {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
     }
 }
+
 apply plugin: 'java'
 apply plugin: 'net.minecraftforge.gradle'
 
@@ -68,22 +69,13 @@ repositories {
     mavenCentral()
 }
 
-
-
-
-
-//reobf {
-//    //noinspection GroovyMissingReturnStatement
-//    shadowJar {}
-//}
-//
-//shadowJar {
-//    minimize()
-//}
-
 dependencies {
     minecraft 'net.minecraftforge:forge:1.13.2-25.0.219'
     compileOnly "org.lwjgl:lwjgl-glfw:$lwjglVersion"
+    compileOnly group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+
+
 
     compile group: 'com.squareup.okio', name: 'okio', version: '2.2.2'
 

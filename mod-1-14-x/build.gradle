@@ -98,11 +98,11 @@ jar {
 
 
 
-//    configurations.shade.each { dep ->
-//        from(project.zipTree(dep)){
-//            exclude 'META-INF', 'META-INF/**'
-//        }
-//    }
+    configurations.shade.each { dep ->
+        from(project.zipTree(dep)){
+            exclude 'META-INF', 'META-INF/**'
+        }
+    }
 
     from configurations.shade.collect { it.isDirectory() ? it : zipTree(it) }
 }
@@ -149,18 +149,4 @@ publishing {
         }
     }
 }
-
-
-//shadowJar {
-//    minimize()
-////    dependencies {
-////        include(project(':mod-core'))
-////    }
-//}
-//
-//reobf {
-//    shadowJar {
-//        
-//    }
-//}
 

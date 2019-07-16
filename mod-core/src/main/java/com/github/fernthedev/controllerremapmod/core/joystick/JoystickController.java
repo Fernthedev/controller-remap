@@ -1,7 +1,6 @@
 package com.github.fernthedev.controllerremapmod.core.joystick;
 
 import com.github.fernthedev.controllerremapmod.mappings.Mapping;
-import com.google.gson.Gson;
 import lombok.*;
 
 import java.nio.ByteBuffer;
@@ -91,6 +90,7 @@ public class JoystickController {
             }
             axisID++;
         }
+
     }
 
     private void validateConnected() {

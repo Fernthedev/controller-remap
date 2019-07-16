@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.RayTraceResult;
 
 @AllArgsConstructor
 public class ControlPlayer implements IControlPlayer {
@@ -22,12 +23,14 @@ public class ControlPlayer implements IControlPlayer {
 
     @Override
     public void addRotationYaw(float value) {
-        player.rotationYaw += value;
+//        player.setPositionAndRotationDirect(player.posX,player.posY,player.posZ,player.rotationYaw + value,player.rotationPitch,1,false);
+        player.rotateTowards(value, 0);
     }
 
     @Override
     public void addRotationPitch(float value) {
-        player.rotationPitch += value;
+        player.rotateTowards(0, value);
+//        player.setPositionAndRotationDirect(player.posX,player.posY,player.posZ,player.rotationYaw,player.rotationPitch + value,1,false);
     }
 
     @Override
@@ -84,5 +87,46 @@ public class ControlPlayer implements IControlPlayer {
     @Override
     public void setSprinting(boolean sprint) {
         player.setSprinting(sprint);
+    }
+
+    @Override
+    public boolean getIsHittingBlock() {
+        return Minecraft.getInstance().playerController.getIsHittingBlock();
+    }
+
+    @Override
+    public void rotateTowards(double yaw, double pitch) {
+        player.rotateTowards(yaw, pitch);
+    }
+
+    @Override
+    public void setRotation(double yaw, double pitch) {
+        player.rotationYaw = (float) yaw;
+        player.rotationPitch = (float) pitch;
+    }
+
+    @Override
+    public double getRotationPitch() {
+        return player.rotationPitch;
+    }
+
+    @Override
+    public double getRotationYaw() {
+        return player.rotationYaw;
+    }
+
+    @Override
+    public void resetBlockRemoving() {
+        Minecraft.getInstance().playerController.resetBlockRemoving();
+    }
+
+    @Override
+    public boolean staringAtAir() {
+        return Minecraft.getInstance().objectMouseOver.hitInfo == RayTraceResult.Type.MISS;
+    }
+
+    @Override
+    public void onStoppedUsingItem() {
+        Minecraft.getInstance().playerController.onStoppedUsingItem(player);
     }
 }

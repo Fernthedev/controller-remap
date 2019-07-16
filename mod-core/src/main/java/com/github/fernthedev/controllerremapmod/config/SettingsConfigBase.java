@@ -22,10 +22,16 @@ public abstract class SettingsConfigBase implements ISettingsConfig {
     protected double sensitivity = 1.0;
 
     @Setter
-    protected double deadzoneLeft, deadzoneRight;
+    protected double deadzoneLeft;
 
     @Setter
-    protected int scrollSpeed, dropSpeed;
+    protected double deadzoneRight;
+
+    @Setter
+    protected int scrollSpeed;
+
+    @Setter
+    protected int dropSpeed;
 
     @Setter
     protected MappingConfig selectedMapping;

@@ -77,19 +77,23 @@ public class ConfigGUI extends GuiScreen implements IConfigGUI {
 
         // Scroll speed speed
         scrollSpeed = new GuiSlider(getId(),width / 2 - 100, getButtonY(), "Scroll Speed (Ticks): ", 1, 100, settings.getScrollSpeed(), slider -> {
-            settings.setScrollSpeed(scrollSpeed.getValueInt());
+            settings.setScrollSpeed(slider.getValueInt());
             settings.sync();
         });
+
+        scrollSpeed.showDecimal = false;
 
         // Drop speed slider
         dropSpeed = new GuiSlider(getId(),width / 2 - 100, getButtonY(), "Drop Speed (Ticks): ", 1, 100, settings.getDropSpeed(), slider -> {
-            settings.setDropSpeed(dropSpeed.getValueInt());
+            settings.setDropSpeed(slider.getValueInt());
             settings.sync();
         });
 
+        dropSpeed.showDecimal = false;
+
         // Sensitivity bar
         sensitivity = new GuiSlider(getId(), width / 2 - 100, getButtonY(), "Sensitivity", 0.01, 5, settings.getSensitivity(), slider -> {
-            settings.setSensitivity(sensitivity.getValue());
+            settings.setSensitivity(slider.getValue());
             settings.sync();
         });
 
@@ -133,12 +137,12 @@ public class ConfigGUI extends GuiScreen implements IConfigGUI {
 
         //Deadzone sliders
         deadzoneLeft = new GuiSlider(getId(), width / 2 - 100, getButtonY(), "Deadzone Left Stick: ", 0.01, 1, settings.getDeadzoneLeft(), slider -> {
-            settings.setDeadzoneLeft(deadzoneLeft.getValue());
+            settings.setDeadzoneLeft(slider.getValue());
             settings.sync();
         });
 
         deadzoneRight = new GuiSlider(getId(), width / 2 - 100, getButtonY(), "Deadzone Right Stick: ", 0.01, 1, settings.getDeadzoneRight(), slider -> {
-            settings.setDeadzoneRight(deadzoneRight.getValue());
+            settings.setDeadzoneRight(slider.getValue());
             settings.sync();
         });
 
