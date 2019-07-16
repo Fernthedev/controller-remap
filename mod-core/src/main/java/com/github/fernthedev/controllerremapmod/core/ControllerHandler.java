@@ -227,7 +227,7 @@ public class ControllerHandler {
 
 
 
-        if(checkToggle(controller.getButtons().getY(),oldMoveButtons.getY())) {
+        if(isPressed(controller.getButtons().getY(),oldMoveButtons.getY())) {
             boolean opened = handler.isInventory();
 
             if(opened) {
@@ -276,7 +276,7 @@ public class ControllerHandler {
 
         //////////////////////////////////////////////
         // Drops item
-        if(!handler.isGuiOpen() && !waitForGuiClose) {
+        if(!handler.isGuiOpen()) {
 
             if (controller.getButtons().getB().isState()) {
 
@@ -358,22 +358,16 @@ public class ControllerHandler {
         }
 
 
-
-        //Closes GUI
-        if(checkToggle(controller.getButtons().getB(),oldButtons.getB())) {
-            if(handler.isGuiOpen()) {
-                if(!waitForGuiClose) {
+        if(handler.isGuiOpen()) {
+            //Closes GUI
+            if (isPressed(controller.getButtons().getB(), oldButtons.getB())) {
+                if (!waitForGuiClose) {
                     //Equivalent to (Minecraft.getMinecraft().displayGuiScreen(null);)
                     handler.closeGUI();
                     waitForGuiClose = true;
                 }
-            } else {
-                waitForGuiClose = false;
             }
-        } else {
-            waitForGuiClose = false;
         }
-
 
         if(leftClickTimeDelay > 0) {
             leftClickTimeDelay--;
@@ -497,6 +491,10 @@ public class ControllerHandler {
 
     private boolean checkToggle(ControllerButtonState newButton, ControllerButtonState oldState) {
         return newButton.isState() != oldState.isState();
+    }
+
+    private boolean isPressed(ControllerButtonState newButton, ControllerButtonState oldState) {
+        return newButton.isState() != oldState.isState() && oldState.isState();
     }
 
     private boolean deadzone(float value, float amount) {

@@ -71,7 +71,7 @@ configurations {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.14.3-27.0.24'
+    minecraft 'net.minecraftforge:forge:1.14.3-27.0.50'
 
     shade(project(':mod-core')) {
         exclude group: 'net.minecraftforge'
