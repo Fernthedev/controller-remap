@@ -15,11 +15,6 @@ import net.minecraft.util.MovementInput;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 
 public class ControllerHandler {
 
@@ -31,9 +26,6 @@ public class ControllerHandler {
     @Getter
     private static IConfigHandler configHandler;
     private int maxDropTime;
-
-    private List<Double> xCamera = new ArrayList<>();
-    private List<Double> yCamera = new ArrayList<>();
 
 
     public static void setHandler(IHandler newHandler) {
@@ -103,8 +95,8 @@ public class ControllerHandler {
 
     private boolean sneakToggleButton;
 
-    private double leftDeadzone = 0.3;
     private boolean sneak;
+
 
     public void moveEvent(MovementInput event,IControlPlayer player) {
         if(!controller.isConnected()) return;
@@ -117,6 +109,8 @@ public class ControllerHandler {
         }
 
         if(!handler.isGuiOpen()) {
+
+            double leftDeadzone = 0.3;
 
             if (deadzone(controller.getAxes().getVERTICAL_LEFT_STICKER().getValue(), leftDeadzone))
                 event.moveForward = -1 * controller.getAxes().getVERTICAL_LEFT_STICKER().getValue();
@@ -304,6 +298,38 @@ public class ControllerHandler {
         }
         //////////////////////////////////////////////
 
+        if(!handler.isGuiOpen()) {
+
+            double deadzoneAmount = updateSettings().getDeadzoneRight();
+
+            double oldPitch = player.getRotationPitch();
+            double oldYaw = player.getRotationYaw();
+
+            double multiplier = updateSettings().getSensitivity() * 10;
+
+            double newPitch = oldPitch + controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue() * multiplier;
+            double newYaw = oldYaw + controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue() * multiplier;
+
+            double interpolatedPitch = oldPitch + (newPitch - oldPitch) * handler.partialTicks();
+            double interpolatedYaw = oldYaw + (newYaw - oldYaw) * handler.partialTicks();
+
+
+
+            //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationPitch += controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue();)
+            if (!deadzone(controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue(), deadzoneAmount)) {
+                interpolatedPitch = (float) oldPitch;
+            }
+//                player.addRotationPitch((float) (controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue() * updateSettings().getSensitivity())); // -1 is down, 1 is up, 0 is stateless
+
+            if (!deadzone(controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue(), deadzoneAmount)) {
+                interpolatedYaw = (float) oldYaw;
+            }
+
+            player.setRotation(interpolatedYaw, interpolatedPitch);
+                //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationYaw += controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue();)
+//                player.addRotationYaw((float) (controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue() * updateSettings().getSensitivity())); // -1 IS DOWN, 1 IS UP, 0 IS STATELESS
+
+        }
 
         oldMoveButtons = controller.getButtons();
         oldMoveAxes = controller.getAxes();
@@ -315,21 +341,21 @@ public class ControllerHandler {
 
 
     public void render(IControlPlayer player) {
-        glfwPollEvents();
+//        glfwPollEvents();
         if(!controller.isConnected()) return;
-        if(!handler.isGuiOpen()) {
-
-            double deadzoneAmount = updateSettings().getDeadzoneRight();
-
-            //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationPitch += controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue();)
-            if(deadzone(controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue(), deadzoneAmount))
-                player.addRotationPitch((float) (controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue() * updateSettings().getSensitivity())); // -1 is down, 1 is up, 0 is stateless
-
-            if(deadzone(controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue(), deadzoneAmount))
-                //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationYaw += controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue();)
-                player.addRotationYaw((float) (controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue() *  updateSettings().getSensitivity())); // -1 IS DOWN, 1 IS UP, 0 IS STATELESS
-
-        }
+//        if(!handler.isGuiOpen()) {
+//
+//            double deadzoneAmount = updateSettings().getDeadzoneRight();
+//
+//            //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationPitch += controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue();)
+//            if(deadzone(controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue(), deadzoneAmount))
+//                player.addRotationPitch((float) (controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue() * updateSettings().getSensitivity())); // -1 is down, 1 is up, 0 is stateless
+//
+//            if(deadzone(controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue(), deadzoneAmount))
+//                //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationYaw += controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue();)
+//                player.addRotationYaw((float) (controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue() *  updateSettings().getSensitivity())); // -1 IS DOWN, 1 IS UP, 0 IS STATELESS
+//
+//        }
     }
 
     private boolean toggleMenuButton;
@@ -378,68 +404,38 @@ public class ControllerHandler {
         }
 
         if(!handler.isGuiOpen()) {
-
-            double deadzoneAmount = updateSettings().getDeadzoneRight();
-            double multiplier = Math.pow(updateSettings().getSensitivity() * (double) 0.6F + (double) 0.2F, 3) * 0.8D * 10;
-
-            double yaw = 0;
-            double pitch = 0;
-
-            //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationPitch += controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue();)
-            if (deadzone(controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue(), deadzoneAmount)) {
-
-
-                pitch = controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue() * multiplier;
-
-//                double difference = controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue() - val;
 //
-//                xCamera.add(controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue() - (difference * 2));
-//                xCamera.add(controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue() - difference);
-//                xCamera.add((double) controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue());
-//                xCamera.add(val);
-//                xCamera.add(val + difference);
-
-
-//                player.addRotationPitch((float) (val)); // -1 is down, 1 is up, 0 is stateless
-            }
-
-
-            if (deadzone(controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue(), deadzoneAmount)) {
-
-                yaw = controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue() * multiplier;
-
-                //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationYaw += controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue();)
-//                player.addRotationYaw((float) val); // -1 IS DOWN, 1 IS UP, 0 IS STATELESS
-            }
-
-//            xCamera.add(player.getRotationPitch() - pitch);
-//            xCamera.add(player.getRotationPitch());
-//            xCamera.add(player.getRotationPitch() + pitch);
+//            double deadzoneAmount = updateSettings().getDeadzoneRight();
+//            double multiplier = Math.pow(updateSettings().getSensitivity() * (double) 0.6F + (double) 0.2F, 3) * 0.8D * 10;
 //
-//            yCamera.add(player.getRotationYaw() - yaw);
-//            yCamera.add(player.getRotationYaw());
-//            yCamera.add(player.getRotationYaw() + yaw);
+//            double yaw = 0;
+//            double pitch = 0;
 //
-//            LinearInterpolator interp = new LinearInterpolator();
+//            //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationPitch += controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue();)
+//            if (deadzone(controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue(), deadzoneAmount)) {
 //
-//            PolynomialSplineFunction fPitch = interp.interpolate(convertDouble(xCamera),convertDouble(xCamera));
-//            PolynomialSplineFunction fYaw = interp.interpolate(convertDouble(yCamera),convertDouble(yCamera));
 //
-//            pitch = fPitch.value(pitch);
-//            yaw = fYaw.value(yaw);
+//                pitch = controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue() * multiplier;
+////                player.addRotationPitch((float) (val)); // -1 is down, 1 is up, 0 is stateless
+//            }
 //
-//            if(yaw != 0) {
-//                yaw = lerp(player.getRotationYaw(), player.getRotationYaw() + yaw, 0.1);
-//            } else {
+//
+//            if (deadzone(controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue(), deadzoneAmount)) {
+//
+//                yaw = controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue() * multiplier;
+//
+//                //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationYaw += controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue();)
+////                player.addRotationYaw((float) val); // -1 IS DOWN, 1 IS UP, 0 IS STATELESS
+//            }
+//
+//            if(yaw == 0) {
 //                yaw = player.getRotationYaw();
 //            }
 //
-//            if(pitch != 0) {
-//                pitch = lerp(player.getRotationPitch(), player.getRotationPitch() + pitch, 1);
-//            }else {
+//            if(pitch == 0) {
 //                pitch = player.getRotationPitch();
 //            }
-
+//
 //            if(yaw != 0 || pitch != 0) {
 //                player.setRotation(yaw, pitch);
 //            }
@@ -511,20 +507,5 @@ public class ControllerHandler {
         maxDropTime = configHandler.getSettings().getDropSpeed();
 
         return handler.getConfigHandler().getSettings();
-    }
-
-    private double lerp(double point1, double point2, double alpha) {
-        return point1 + alpha * (point2 - point1);
-    }
-
-    public static double[] convertDouble(List<Double> doubleList)
-    {
-        double[] ret = new double[doubleList.size()];
-        Iterator<Double> iterator = doubleList.iterator();
-        for (int i = 0; i < ret.length; i++)
-        {
-            ret[i] = iterator.next();
-        }
-        return ret;
     }
 }

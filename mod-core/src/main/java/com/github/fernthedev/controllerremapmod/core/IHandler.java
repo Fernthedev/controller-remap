@@ -41,4 +41,6 @@ public interface IHandler {
     Object getGui();
 
     void displayOptions();
+
+    float partialTicks();
 }

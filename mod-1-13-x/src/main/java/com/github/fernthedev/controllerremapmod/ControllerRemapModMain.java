@@ -258,4 +258,9 @@ public class ControllerRemapModMain implements IHandler {
         Minecraft.getInstance().displayGuiScreen(new ConfigGUI(configHandler.getSettings().getLoadedMappingList(),Minecraft.getInstance().currentScreen));
     }
 
+    @Override
+    public float partialTicks() {
+        return Minecraft.getInstance().getRenderPartialTicks();
+    }
+
 }
