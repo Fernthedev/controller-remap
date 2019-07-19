@@ -1,6 +1,12 @@
 ## Welcome to Controller Remap
 
-This is a mod that allows you to use a PS4 or Xbox One controller or even a custom controller with [custom mappings!](https://github.com/Fernthedev/controller-remap/tree/master/docs#mappings)
+This is a mod for Minecraft Java Edition that allows you to use a PS4 or Xbox One controller or even a custom controller with [custom mappings!](https://github.com/Fernthedev/controller-remap/tree/master/docs#mappings)
+
+## Download
+This mod is for 1.13 and 1.14
+The reason is because of what new updated libraries 1.13+ bring that allow this to even be possible. GLFW allows controllers to be used is only included in LWJGL3 which is only available Minecraft 1.13+
+
+Version releases can be found here: https://github.com/Fernthedev/controller-remap/releases
 
 ## Features
 
