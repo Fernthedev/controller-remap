@@ -23,8 +23,11 @@ Version releases can be found here: https://github.com/Fernthedev/controller-rem
 ### Mappings
 
 Mappings are JSON files that tell the mod what buttons are on your controller through their respective IDs. The default mappings (and where they should be stored) can be found in the config folder, inside of the mappings folder. There is a template file (which is the same as the Xbox One mapping) for use as a base for creating your controller mapping. This is how it looks:
+
 Format:
+
 Button :: ButtonID (GLFW/LWJGL button ID)
+
 You can get the button ids using [this (not created by me)](https://github.com/Fernthedev/controller-remap/releases/download/1.2.2/ControllerTest.jar)
 ```json
 {
