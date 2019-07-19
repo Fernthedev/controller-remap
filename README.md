@@ -1,9 +1,6 @@
-## Welcome to GitHub Pages
+## Controller Remap Mod
 
-You can use the [editor on GitHub](https://github.com/Fernthedev/controller-remap/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
-
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
+This mod allows you to use PS4 DualShock4, Xbox One controllers or even custom ones created from your mappings.
 ### Markdown
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
