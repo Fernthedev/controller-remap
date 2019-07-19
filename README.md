@@ -1,34 +1,63 @@
-## Controller Remap Mod
+## Welcome to Controller Remap
 
-This mod allows you to use PS4 DualShock4, Xbox One controllers or even custom ones created from your mappings.
-### Markdown
+This is a mod for Minecraft Java Edition that allows you to use a PS4 or Xbox One controller or even a custom controller with [custom mappings!](https://github.com/Fernthedev/controller-remap/tree/master/docs#mappings)
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+## Download
+This mod is for 1.13 and 1.14
+The reason is because of what new updated libraries 1.13+ bring that allow this to even be possible. GLFW allows controllers to be used is only included in LWJGL3 which is only available Minecraft 1.13+
 
-```markdown
-Syntax highlighted code block
+Version releases can be found here: https://github.com/Fernthedev/controller-remap/releases
 
-# Header 1
-## Header 2
-### Header 3
+## Features
 
-- Bulleted
-- List
+- Native support for Xbox One and/or PS4 controller (Only 1 controller at once)
+- Support for mappings for [custom controllers](https://github.com/Fernthedev/controller-remap/tree/master/docs#mappings)
+- Controls are based on the console versions of Minecraft.
 
-1. Numbered
-2. List
+### Known Bugs or missing features 
 
-**Bold** and _Italic_ and `Code` text
+- You can only place blocks with left trigger, features such as shields or bows do not work. A workaround is being worked on, no promises though.
+- You can't navigate through menus or inventory. I have no idea how to implement this yet, until then just attempt to use your mouse.
+- The camera randomly moves slower/faster with same sensitivity and/or it stutters. This is an issue with how it's been implemented since it is basically frame bound. This allows it to look smooth in over 100 fps but incosistent with different frame rates. A workaround for this is being worked on, but the result is very slow and stuttery for now.
 
-[Link](url) and ![Image](src)
+### Mappings
+
+Mappings are JSON files that tell the mod what buttons are on your controller through their respective IDs. The default mappings (and where they should be stored) can be found in the config folder, inside of the mappings folder. There is a template file (which is the same as the Xbox One mapping) for use as a base for creating your controller mapping. This is how it looks:
+
+Format:
+
+Button :: ButtonID (GLFW/LWJGL button ID)
+
+You can get the button ids using [this (not created by me)](https://github.com/Fernthedev/controller-remap/releases/download/1.2.2/ControllerTest.jar)
+```json
+{
+  "buttonMapping": {
+    "A": 0,
+    "B": 1,
+    "X": 2,
+    "Y": 3,
+    "BUMPER_LEFT": 4,
+    "BUMPER_RIGHT": 5,
+    "EXTRA_BUTTON": 6,
+    "START_BUTTON": 7,
+    "LEFT_STICKER": 8,
+    "RIGHT_STICKER": 9,
+    "DPAD_UP": 10,
+    "DPAD_RIGHT": 11,
+    "DPAD_DOWN": 12,
+    "DPAD_LEFT": 13
+  },
+  "axesMapping": {
+    "HORIZONTAL_LEFT_STICKER": 0,
+    "VERTICAL_LEFT_STICKER": 1,
+    "VERTICAL_RIGHT_STICKER": 2,
+    "HORIZONTAL_RIGHT_STICKER": 3,
+    "LEFT_TRIGGER": 4,
+    "RIGHT_TRIGGER": 5
+  },
+  "name": "XboxOne"
+}
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/Fernthedev/controller-remap/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
 ### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+Create an issue for bug reports, feature requests or help in general.
