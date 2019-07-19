@@ -11,7 +11,7 @@ Version releases can be found here: https://github.com/Fernthedev/controller-rem
 ## Features
 
 - Native support for Xbox One and/or PS4 controller (Only 1 controller at once)
-- Support for mappings for [custom controllers](https://github.com/Fernthedev/controller-remap/tree/master/docs#mappings)
+- Support for mappings for [custom controllers](#mappings)
 - Controls are based on the console versions of Minecraft.
 
 ### Known Bugs or missing features 
