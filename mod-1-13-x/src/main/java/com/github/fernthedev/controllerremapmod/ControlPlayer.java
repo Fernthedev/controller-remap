@@ -101,8 +101,8 @@ public class ControlPlayer implements IControlPlayer {
 
     @Override
     public void setRotation(double yaw, double pitch) {
-        player.rotationYaw = (float) yaw;
         player.rotationPitch = (float) pitch;
+        player.rotationYaw = (float) yaw;
     }
 
     @Override
