@@ -45,4 +45,8 @@ public interface IControlPlayer {
     boolean staringAtAir();
 
     void onStoppedUsingItem();
+
+    boolean staringAtBlock();
+
+    boolean isObjectMouseOverNull();
 }

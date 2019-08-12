@@ -16,8 +16,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 
-import static org.lwjgl.glfw.GLFW.glfwPollEvents;
-
 public class ControllerHandler {
 
     private static JoystickController controller;
@@ -99,7 +97,7 @@ public class ControllerHandler {
 
     private boolean sneak;
 
-    private float lastRenderPartialTick;
+    private float lastRenderPartialTick; // Is useless, only kept in case.
 
 
     public void moveEvent(MovementInput event,IControlPlayer player) {
@@ -164,15 +162,18 @@ public class ControllerHandler {
 
             boolean leftClickPress = leftClickPressTimeHeld == 0;
 
-            if(player.staringAtMob() && controller.getAxes().getRIGHT_TRIGGER().getValue() > 0.5 && leftClickTimeDelay <= 0) leftClickPress = true;
+            if(!player.isObjectMouseOverNull() && player.staringAtMob() && controller.getAxes().getRIGHT_TRIGGER().getValue() > 0.5 && leftClickTimeDelay <= 0) leftClickPress = true;
 
-            if(controller.getAxes().getRIGHT_TRIGGER().getValue() > 0.5 && player.staringAtAir() && oldMoveAxes.getRIGHT_TRIGGER().getValue() < 0.5) {
+            if(controller.getAxes().getRIGHT_TRIGGER().getValue() > 0.5 && !player.isObjectMouseOverNull() && player.staringAtAir() && oldMoveAxes.getRIGHT_TRIGGER().getValue() < 0.5) {
                 leftClickPress = true;
             }
 
             if(controller.getAxes().getRIGHT_TRIGGER().getValue() < 0.5) {
                 leftClickPress = false;
                 leftClickPressTimeHeld = 1;
+            }
+
+            if( !(leftClickPress) || player.isObjectMouseOverNull() || !(player.staringAtBlock())) {
                 player.resetBlockRemoving();
             }
 
@@ -301,6 +302,8 @@ public class ControllerHandler {
             }
         }
 
+        lastRenderPartialTick = handler.partialTicks();
+
 
         oldMoveButtons = controller.getButtons();
         oldMoveAxes = controller.getAxes();
@@ -312,7 +315,6 @@ public class ControllerHandler {
 
 
     public void render(IControlPlayer player) {
-        glfwPollEvents();
         if(!controller.isConnected()) return;
 
         //////////////////////////////////////////////
@@ -324,13 +326,18 @@ public class ControllerHandler {
             double oldPitch = player.getRotationPitch();
             double oldYaw = player.getRotationYaw();
 
-            double multiplier = updateSettings().getSensitivity();
+            double multiplier = updateSettings().getSensitivity() * 4;
 
             double newPitch = oldPitch + controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue() * multiplier;
             double newYaw = oldYaw + controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue() * multiplier;
 
-            double interpolatedPitch = oldPitch + (newPitch - oldPitch) * ((double) lastRenderPartialTick);
-            double interpolatedYaw = oldYaw + (newYaw - oldYaw) * ((double) lastRenderPartialTick);
+            double tick = lastRenderPartialTick; // Is useless, only kept in case.
+
+            double interpolatedPitch = oldPitch + (newPitch - oldPitch) * tick; // Is useless, only kept in case.
+            double interpolatedYaw = oldYaw + (newYaw - oldYaw) * tick; // Is useless, only kept in case.
+
+            double velX = newYaw - oldYaw;
+            double velY = newPitch - oldPitch;
 
             boolean setRotation = false;
 
@@ -339,7 +346,8 @@ public class ControllerHandler {
                 setRotation = true;
                 handler.getLogger().info("Deadzone pitch ("
                         + deadzone(controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue(), deadzoneAmount) +
-                        ") oldPitch + (newPitch - oldPitch) * handler.partialTicks() = " + interpolatedPitch);
+                        ") oldPitch [" + oldPitch + "] + (newPitch [" + newPitch + "]" +
+                        " - oldPitch [" + oldPitch + "]) * handler.partialTicks() [" + tick + "] = " + interpolatedPitch);
 //                player.addRotationPitch((float) interpolatedPitch);
             } else {
                 interpolatedPitch = (float) oldPitch;
@@ -350,7 +358,8 @@ public class ControllerHandler {
                 setRotation = true;
                 handler.getLogger().info("Deadzone yaw ("
                         + deadzone(controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue(), deadzoneAmount) +
-                        ") oldYaw + (newYaw - oldYaw) * handler.partialTicks() = " + interpolatedYaw);
+                        ") oldYaw [" + oldYaw + "] + (newYaw [" + newYaw + "]" +
+                        " - oldYaw [" + oldYaw + "]) * handler.partialTicks() [" + tick + "] = " + interpolatedYaw);
 //                player.addRotationYaw((float) interpolatedYaw);
             } else {
                 interpolatedYaw = (float) oldYaw;
@@ -358,7 +367,7 @@ public class ControllerHandler {
 
 
             if (setRotation)
-                player.setRotation(interpolatedYaw, interpolatedPitch);
+                player.rotateTowards(velX, velY);
             //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationYaw += controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue();)
 //                player.addRotationYaw((float) (controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue() * updateSettings().getSensitivity())); // -1 IS DOWN, 1 IS UP, 0 IS STATELESS
 
@@ -492,7 +501,7 @@ public class ControllerHandler {
 
 
 
-        lastRenderPartialTick = handler.partialTicks();
+
 
 
         oldButtons = controller.getButtons();

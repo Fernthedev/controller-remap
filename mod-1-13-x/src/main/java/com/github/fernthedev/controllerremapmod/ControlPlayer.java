@@ -129,4 +129,14 @@ public class ControlPlayer implements IControlPlayer {
     public void onStoppedUsingItem() {
         Minecraft.getInstance().playerController.onStoppedUsingItem(player);
     }
+
+    @Override
+    public boolean staringAtBlock() {
+        return Minecraft.getInstance().objectMouseOver.type == RayTraceResult.Type.BLOCK;
+    }
+
+    @Override
+    public boolean isObjectMouseOverNull() {
+        return Minecraft.getInstance().objectMouseOver == null;
+    }
 }
