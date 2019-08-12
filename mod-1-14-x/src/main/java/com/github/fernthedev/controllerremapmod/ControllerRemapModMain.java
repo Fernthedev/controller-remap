@@ -146,7 +146,6 @@ public class ControllerRemapModMain implements IHandler {
         }else{
             tabOverlay.setVisible(false);
         }
-        Minecraft.getInstance().gameSettings.keyBindLeft.
     }
 
     @Override
