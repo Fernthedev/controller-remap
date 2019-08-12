@@ -28,7 +28,7 @@ Format:
 
 Button :: ButtonID (GLFW/LWJGL button ID)
 
-You can get the button ids using [this (not created by me)](https://github.com/Fernthedev/controller-remap/releases/download/1.2.2/ControllerTest.jar)
+You can get the button ids using [this (not created by me)](https://github.com/Fernthedev/controller-remap/releases/download/1.2.2nonver/ControllerTest.jar)
 ```json
 {
   "buttonMapping": {
