@@ -201,6 +201,20 @@ public class ControllerRemapModMain implements IHandler {
     }
 
     @Override
+    public void clickMouse() {
+        try {
+            if (clickMethod == null) {
+                clickMethod = ObfuscationReflectionHelper.findMethod(minecraftClass, "func_147116_af");
+                clickMethod.setAccessible(true);
+            }
+
+            clickMethod.invoke(Minecraft.getInstance());
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public boolean isInventory() {
         return Minecraft.getInstance().currentScreen instanceof GuiInventory;
     }
@@ -242,6 +256,11 @@ public class ControllerRemapModMain implements IHandler {
     @Override
     public void displayOptions() {
         Minecraft.getInstance().displayGuiScreen(new ConfigGUI(configHandler.getSettings().getLoadedMappingList(),Minecraft.getInstance().currentScreen));
+    }
+
+    @Override
+    public float partialTicks() {
+        return Minecraft.getInstance().getRenderPartialTicks();
     }
 
 }

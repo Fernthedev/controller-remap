@@ -124,6 +124,10 @@ public class TOMLSettingsConfig extends SettingsConfigBase {
     public void save() {
         setAndSave(sensitivityConfig.getPath(),sensitivity);
         setAndSave(selectedMappingConfig.getPath(),FilenameUtils.removeExtension(selectedMapping.getFile().getName()));
+        setAndSave(deadzoneLeftConfig.getPath(), deadzoneLeft);
+        setAndSave(deadzoneRightConfig.getPath(), deadzoneRight);
+        setAndSave(dropSpeedConfig.getPath(), dropSpeed);
+        setAndSave(scrollSpeedConfig.getPath(), scrollSpeed);
     }
 
     @Override

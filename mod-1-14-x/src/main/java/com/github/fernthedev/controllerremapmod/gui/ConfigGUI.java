@@ -66,20 +66,33 @@ public class ConfigGUI extends Screen implements IConfigGUI {
 
 
         // Scroll speed speed
-        scrollSpeed = new GuiSlider(width / 2 - 100, getButtonY(), "Scroll Speed (Ticks): ", 1, 100, settings.getScrollSpeed(),null, slider -> {
+        scrollSpeed = new GuiSlider(width / 2 - 100, getButtonY(), "Scroll Speed (Ticks): ", 1, 100, settings.getScrollSpeed(),handler -> {
             settings.setScrollSpeed(scrollSpeed.getValueInt());
             settings.sync();
-        });
-
-        // Drop speed slider
-        dropSpeed = new GuiSlider(width / 2 - 100, getButtonY(), "Drop Speed (Ticks): ", 1, 100, settings.getDropSpeed(),null, slider -> {
-            settings.setDropSpeed(dropSpeed.getValueInt());
+        }, slider -> {
+            settings.setScrollSpeed(slider.getValueInt());
             settings.sync();
         });
 
+        scrollSpeed.showDecimal = false;
+
+        // Drop speed slider
+        dropSpeed = new GuiSlider(width / 2 - 100, getButtonY(), "Drop Speed (Ticks): ", 1, 100, settings.getDropSpeed(),handler -> {
+            settings.setDropSpeed(dropSpeed.getValueInt());
+            settings.sync();
+        }, slider -> {
+            settings.setDropSpeed(slider.getValueInt());
+            settings.sync();
+        });
+
+        dropSpeed.showDecimal = false;
+
         // Sensitivity bar
-        sensitivity = new GuiSlider(width / 2 - 100, getButtonY(), "Sensitivity", 0.01, 5, settings.getSensitivity(),null, slider -> {
+        sensitivity = new GuiSlider(width / 2 - 100, getButtonY(), "Sensitivity", 0.01, 5, settings.getSensitivity(),handler -> {
             settings.setSensitivity(sensitivity.getValue());
+            settings.sync();
+        }, slider -> {
+            settings.setSensitivity(slider.getValue());
             settings.sync();
         });
 
@@ -93,7 +106,9 @@ public class ConfigGUI extends Screen implements IConfigGUI {
 
 
 
-            mappingListSlider = new GuiTextSlider(sliderX, sliderY, formattedMapping(), 0, mappingList.size() - 1, curIndex, null, slider -> {
+            mappingListSlider = new GuiTextSlider(sliderX, sliderY, formattedMapping(), 0, mappingList.size() - 1, curIndex, handler -> {
+                settings.sync();
+            }, slider -> {
 //                ControllerHandler.getHandler().getLogger().info("The current mappings are " +  mappingList);
 
                 slider.maxValue = mappingList.size() - 1;
@@ -117,19 +132,23 @@ public class ConfigGUI extends Screen implements IConfigGUI {
         mappingListSlider.setMessage(formattedMapping());
 
         //Deadzone sliders
-        deadzoneLeft = new GuiSlider(width / 2 - 100, getButtonY(), "Deadzone Left Stick: ", 0.01, 1, settings.getDeadzoneLeft(), null, slider -> {
+        deadzoneLeft = new GuiSlider(width / 2 - 100, getButtonY(), "Deadzone Left Stick: ", 0.01, 1, settings.getDeadzoneLeft(), handler -> {
             settings.setDeadzoneLeft(deadzoneLeft.getValue());
             settings.sync();
+        }, slider -> {
+            settings.setDeadzoneLeft(slider.getValue());
+            settings.sync();
         });
 
-        deadzoneRight = new GuiSlider(width / 2 - 100, getButtonY(), "Deadzone Right Stick: ", 0.01, 1,  settings.getDeadzoneRight(), null, slider -> {
+        deadzoneRight = new GuiSlider(width / 2 - 100, getButtonY(), "Deadzone Right Stick: ", 0.01, 1,  settings.getDeadzoneRight(), handler -> {
             settings.setDeadzoneRight(deadzoneRight.getValue());
             settings.sync();
-        });
-
-        reloadMappings = new GuiButtonExt(width / 2 - 100, getButtonY(), 150, 20, "Reload Mapping", button -> {
+        }, slider -> {
+            settings.setDeadzoneRight(slider.getValue());
             settings.sync();
         });
+
+        reloadMappings = new GuiButtonExt(width / 2 - 100, getButtonY(), 150, 20, "Reload Mapping", button -> settings.sync());
 
 
         // Exit menu/Done button

@@ -73,7 +73,7 @@ configurations {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.13.2-25.0.219'
 
-    shade(project(':mod-core')) {
+    compile(project(':mod-core')) {
         exclude group: 'net.minecraftforge'
     }
 }
@@ -104,7 +104,7 @@ jar {
 //        }
 //    }
 
-    from configurations.shade.collect { it.isDirectory() ? it : zipTree(it) }
+//    from configurations.shade.collect { it.isDirectory() ? it : zipTree(it) }
 }
 
 
@@ -160,7 +160,7 @@ publishing {
 //
 //reobf {
 //    shadowJar {
-//        
+//
 //    }
 //}
 

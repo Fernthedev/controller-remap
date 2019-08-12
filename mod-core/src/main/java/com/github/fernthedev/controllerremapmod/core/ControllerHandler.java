@@ -4,6 +4,7 @@ import com.github.fernthedev.controllerremapmod.config.IConfigHandler;
 import com.github.fernthedev.controllerremapmod.config.ISettingsConfig;
 import com.github.fernthedev.controllerremapmod.config.MappingConfig;
 import com.github.fernthedev.controllerremapmod.config.ui.IConfigGUI;
+import com.github.fernthedev.controllerremapmod.core.joystick.ControllerAxis;
 import com.github.fernthedev.controllerremapmod.core.joystick.ControllerButtonState;
 import com.github.fernthedev.controllerremapmod.core.joystick.ControllerButtons;
 import com.github.fernthedev.controllerremapmod.core.joystick.JoystickController;
@@ -15,8 +16,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 
-import static org.lwjgl.glfw.GLFW.glfwPollEvents;
-
 public class ControllerHandler {
 
     private static JoystickController controller;
@@ -27,6 +26,7 @@ public class ControllerHandler {
     @Getter
     private static IConfigHandler configHandler;
     private int maxDropTime;
+
 
     public static void setHandler(IHandler newHandler) {
         if(handler == null) {
@@ -78,42 +78,46 @@ public class ControllerHandler {
     private ControllerButtons oldButtons;
 
     private ControllerButtons oldMoveButtons;
+    private ControllerAxis oldMoveAxes;
 
     private int scrollTime;
     private int maxScrollTime = 6;
 
     private int dropTime;
 
+    private int leftClickPressTimeHeld;
+    private boolean waitForGuiClose;
+
+    private int rightClickTimeHeld;
 
     private int rightClickTimeDelay;
     private int leftClickTimeDelay;
 
-
-
-    private int leftClickPressTimeHeld;
-    private int rightClickPressTimeHeld;
-
     private boolean sneakToggleButton;
 
-    private double leftDeadzone = 0.3;
     private boolean sneak;
 
+    private float lastRenderPartialTick; // Is useless, only kept in case.
+
+
     public void moveEvent(MovementInput event,IControlPlayer player) {
-        glfwPollEvents();
         if(!controller.isConnected()) return;
 
         updateSettings();
 
-        if(oldMoveButtons == null) {
+        if(oldMoveButtons == null || oldMoveAxes == null) {
             oldMoveButtons = controller.getButtons();
+            oldMoveAxes = controller.getAxes();
         }
 
         if(!handler.isGuiOpen()) {
 
-            if (controller.getAxes().getVERTICAL_LEFT_STICKER().getValue() > leftDeadzone || controller.getAxes().getVERTICAL_LEFT_STICKER().getValue() < -leftDeadzone)
+            double leftDeadzone = 0.3;
+
+            if (deadzone(controller.getAxes().getVERTICAL_LEFT_STICKER().getValue(), leftDeadzone))
                 event.moveForward = -1 * controller.getAxes().getVERTICAL_LEFT_STICKER().getValue();
 
-            if (controller.getAxes().getHORIZONTAL_LEFT_STICKER().getValue() > leftDeadzone || controller.getAxes().getHORIZONTAL_LEFT_STICKER().getValue() < -leftDeadzone)
+            if (deadzone(controller.getAxes().getHORIZONTAL_LEFT_STICKER().getValue(), leftDeadzone))
                 event.moveStrafe = -1 * controller.getAxes().getHORIZONTAL_LEFT_STICKER().getValue();
 
             if (controller.getButtons().getA().isState()) {
@@ -147,51 +151,40 @@ public class ControllerHandler {
                 }
             }
 
-            if(controller.getAxes().getLEFT_TRIGGER().getValue() < 0.5) {
-                rightClickPressTimeHeld = 1;
-            }
 
-            if(controller.getAxes().getLEFT_TRIGGER().getValue() > 0.5) {
-                if(rightClickPressTimeHeld >= -1) {
-                    rightClickPressTimeHeld--;
-                }
-            }
-
-            boolean rightClickPress = rightClickPressTimeHeld == 0;
-
-            if(rightClickPress) {
-                handler.clickRightMouse();
-                rightClickTimeDelay = 8;
-            }
-
-            if(rightClickTimeDelay == 0 && !player.isHandActive() && controller.getAxes().getLEFT_TRIGGER().getValue() > 0.5 ) {
-                handler.clickRightMouse();
-                rightClickTimeDelay = 8;
-            }
 
 //            handler.printChat(rightClickTimeDelay + " is the delay called from " + called);
+// /////////////////////////////////////////
 
-
-
-
-            if(controller.getAxes().getRIGHT_TRIGGER().getValue() < 0.5) {
-                leftClickPressTimeHeld = 1;
-            }
-
-            if(controller.getAxes().getRIGHT_TRIGGER().getValue() > 0.5) {
-                if(leftClickPressTimeHeld >= -1) {
-                    leftClickPressTimeHeld--;
-                }
+            if (controller.getAxes().getLEFT_TRIGGER().getValue() < 0.5 && player.isHandActive()) {
+                player.onStoppedUsingItem();
             }
 
             boolean leftClickPress = leftClickPressTimeHeld == 0;
 
-            if(player.staringAtMob() && controller.getAxes().getRIGHT_TRIGGER().getValue() > 0.5 && leftClickTimeDelay <= 0) leftClickPress = true;
+            if(!player.isObjectMouseOverNull() && player.staringAtMob() && controller.getAxes().getRIGHT_TRIGGER().getValue() > 0.5 && leftClickTimeDelay <= 0) leftClickPress = true;
+
+            if(controller.getAxes().getRIGHT_TRIGGER().getValue() > 0.5 && !player.isObjectMouseOverNull() && player.staringAtAir() && oldMoveAxes.getRIGHT_TRIGGER().getValue() < 0.5) {
+                leftClickPress = true;
+            }
+
+            if(controller.getAxes().getRIGHT_TRIGGER().getValue() < 0.5) {
+                leftClickPress = false;
+                leftClickPressTimeHeld = 1;
+            }
+
+            if( !(leftClickPress) || player.isObjectMouseOverNull() || !(player.staringAtBlock())) {
+                player.resetBlockRemoving();
+            }
+
+
+
 
             handler.clickMouse(leftClickPress,controller.getAxes().getRIGHT_TRIGGER().getValue() > 0.5);
 
             if(controller.getAxes().getRIGHT_TRIGGER().getValue() > 0.5 && leftClickTimeDelay <= 0) {
                 leftClickTimeDelay = 10;
+
             }
 
 
@@ -233,8 +226,7 @@ public class ControllerHandler {
 
 
 
-
-        if(checkToggle(controller.getButtons().getY(),oldMoveButtons.getY())) {
+        if(isPressed(controller.getButtons().getY(),oldMoveButtons.getY())) {
             boolean opened = handler.isInventory();
 
             if(opened) {
@@ -279,7 +271,7 @@ public class ControllerHandler {
             toggle3rdPersonButton = false;
         }
 
-        boolean resetDroptime = true;
+        boolean resetDropTime = true;
 
         //////////////////////////////////////////////
         // Drops item
@@ -291,12 +283,12 @@ public class ControllerHandler {
                     player.dropItem();
                 }
 
-                if(dropTime > maxDropTime + 6) {
+                if(dropTime > maxDropTime + 4) {
                     dropTime = maxDropTime;
                     player.dropItem();
                 }
 
-                resetDroptime = false;
+                resetDropTime = false;
 
 //                if(dropTime > 50) {
 //                    player.dropStack();
@@ -305,17 +297,16 @@ public class ControllerHandler {
                 dropTime++;
             }
 
-            if(resetDroptime) {
+            if(resetDropTime) {
                 dropTime = 0;
             }
-
-
         }
-        //////////////////////////////////////////////
+
+        lastRenderPartialTick = handler.partialTicks();
 
 
         oldMoveButtons = controller.getButtons();
-
+        oldMoveAxes = controller.getAxes();
 
     }
 
@@ -324,29 +315,81 @@ public class ControllerHandler {
 
 
     public void render(IControlPlayer player) {
-        glfwPollEvents();
         if(!controller.isConnected()) return;
+
+        //////////////////////////////////////////////
+
         if(!handler.isGuiOpen()) {
 
-            double deadzoneAmount = 0.3;
+            double deadzoneAmount = updateSettings().getDeadzoneRight();
 
+            double oldPitch = player.getRotationPitch();
+            double oldYaw = player.getRotationYaw();
 
+            double multiplier = updateSettings().getSensitivity() * 4;
+
+            double newPitch = oldPitch + controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue() * multiplier;
+            double newYaw = oldYaw + controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue() * multiplier;
+
+            double tick = lastRenderPartialTick; // Is useless, only kept in case.
+
+            double interpolatedPitch = oldPitch + (newPitch - oldPitch) * tick; // Is useless, only kept in case.
+            double interpolatedYaw = oldYaw + (newYaw - oldYaw) * tick; // Is useless, only kept in case.
+
+            double velX = newYaw - oldYaw;
+            double velY = newPitch - oldPitch;
+
+            boolean setRotation = false;
 
             //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationPitch += controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue();)
-            if(deadzone(controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue(),-deadzoneAmount,deadzoneAmount))
-                player.addRotationPitch((float) (controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue() * updateSettings().getSensitivity())); // -1 is down, 1 is up, 0 is stateless
+            if (deadzone(controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue(), deadzoneAmount)) {
+                setRotation = true;
+                handler.getLogger().info("Deadzone pitch ("
+                        + deadzone(controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue(), deadzoneAmount) +
+                        ") oldPitch [" + oldPitch + "] + (newPitch [" + newPitch + "]" +
+                        " - oldPitch [" + oldPitch + "]) * handler.partialTicks() [" + tick + "] = " + interpolatedPitch);
+//                player.addRotationPitch((float) interpolatedPitch);
+            } else {
+                interpolatedPitch = (float) oldPitch;
+            }
+//                player.addRotationPitch((float) (controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue() * updateSettings().getSensitivity())); // -1 is down, 1 is up, 0 is stateless
 
-            if(deadzone(controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue(),-deadzoneAmount,deadzoneAmount))
-                //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationYaw += controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue();)
-                player.addRotationYaw((float) (controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue() *  updateSettings().getSensitivity())); // -1 IS DOWN, 1 IS UP, 0 IS STATELESS
+            if (deadzone(controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue(), deadzoneAmount)) {
+                setRotation = true;
+                handler.getLogger().info("Deadzone yaw ("
+                        + deadzone(controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue(), deadzoneAmount) +
+                        ") oldYaw [" + oldYaw + "] + (newYaw [" + newYaw + "]" +
+                        " - oldYaw [" + oldYaw + "]) * handler.partialTicks() [" + tick + "] = " + interpolatedYaw);
+//                player.addRotationYaw((float) interpolatedYaw);
+            } else {
+                interpolatedYaw = (float) oldYaw;
+            }
+
+
+            if (setRotation)
+                player.rotateTowards(velX, velY);
+            //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationYaw += controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue();)
+//                player.addRotationYaw((float) (controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue() * updateSettings().getSensitivity())); // -1 IS DOWN, 1 IS UP, 0 IS STATELESS
 
         }
+//        if(!handler.isGuiOpen()) {
+//
+//            double deadzoneAmount = updateSettings().getDeadzoneRight();
+//
+//            //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationPitch += controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue();)
+//            if(deadzone(controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue(), deadzoneAmount))
+//                player.addRotationPitch((float) (controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue() * updateSettings().getSensitivity())); // -1 is down, 1 is up, 0 is stateless
+//
+//            if(deadzone(controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue(), deadzoneAmount))
+//                //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationYaw += controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue();)
+//                player.addRotationYaw((float) (controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue() *  updateSettings().getSensitivity())); // -1 IS DOWN, 1 IS UP, 0 IS STATELESS
+//
+//        }
     }
 
     private boolean toggleMenuButton;
 
     public void updateTick(IControlPlayer player) {
-        glfwPollEvents();
         if(!controller.isConnected()) return;
 
         updateSettings();
@@ -370,25 +413,105 @@ public class ControllerHandler {
         }
 
 
-
-        //Closes GUI
-        if(checkToggle(controller.getButtons().getB(),oldButtons.getB())) {
-            if(handler.isGuiOpen()) {
-                //Equivalent to (Minecraft.getMinecraft().displayGuiScreen(null);)
-                handler.closeGUI();
+        if(handler.isGuiOpen()) {
+            //Closes GUI
+            if (isPressed(controller.getButtons().getB(), oldButtons.getB())) {
+                if (!waitForGuiClose) {
+                    //Equivalent to (Minecraft.getMinecraft().displayGuiScreen(null);)
+                    handler.closeGUI();
+                    waitForGuiClose = true;
+                }
             }
         }
 
-
-        leftClickTimeDelay--;
+        if(leftClickTimeDelay > 0) {
+            leftClickTimeDelay--;
+        }
 
         if(rightClickTimeDelay > 0) {
-            rightClickTimeDelay--;
+            --rightClickTimeDelay;
         }
+
+        if(!handler.isGuiOpen()) {
+//
+//            double deadzoneAmount = updateSettings().getDeadzoneRight();
+//            double multiplier = Math.pow(updateSettings().getSensitivity() * (double) 0.6F + (double) 0.2F, 3) * 0.8D * 10;
+//
+//            double yaw = 0;
+//            double pitch = 0;
+//
+//            //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationPitch += controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue();)
+//            if (deadzone(controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue(), deadzoneAmount)) {
+//
+//
+//                pitch = controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue() * multiplier;
+////                player.addRotationPitch((float) (val)); // -1 is down, 1 is up, 0 is stateless
+//            }
+//
+//
+//            if (deadzone(controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue(), deadzoneAmount)) {
+//
+//                yaw = controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue() * multiplier;
+//
+//                //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationYaw += controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue();)
+////                player.addRotationYaw((float) val); // -1 IS DOWN, 1 IS UP, 0 IS STATELESS
+//            }
+//
+//            if(yaw == 0) {
+//                yaw = player.getRotationYaw();
+//            }
+//
+//            if(pitch == 0) {
+//                pitch = player.getRotationPitch();
+//            }
+//
+//            if(yaw != 0 || pitch != 0) {
+//                player.setRotation(yaw, pitch);
+//            }
+
+            ///////// RIGHT CLICK
+
+            if (controller.getAxes().getLEFT_TRIGGER().getValue() < 0.5) {
+                rightClickTimeHeld = 0;
+            }
+
+
+            boolean rightClickPress = rightClickTimeHeld == 0 && controller.getAxes().getLEFT_TRIGGER().getValue() > 0.5; // 0 means true because it has finished waiting for the ticks required.
+
+            if(controller.getAxes().getLEFT_TRIGGER().getValue() > 0.5) { //triggering
+                rightClickTimeHeld = 1;
+            }
+
+            while (rightClickPress) {
+                handler.getLogger().info(rightClickPress + " held: " + rightClickTimeHeld + " delay: " + rightClickTimeDelay + " time " + System.currentTimeMillis());
+                rightClickPress = false;
+                rightClick(player);
+            }
+
+
+
+
+            if (controller.getAxes().getLEFT_TRIGGER().getValue() > 0.5 && rightClickTimeDelay == 0 && !player.isHandActive()) {
+                rightClick(player);
+                handler.getLogger().info(rightClickPress + " held: " + rightClickTimeHeld + " delay: " + rightClickTimeDelay + " time " + System.currentTimeMillis());
+            }
+
+        }
+
+
+
+
 
 
 
         oldButtons = controller.getButtons();
+    }
+
+    private void rightClick(IControlPlayer player) {
+        if (!player.getIsHittingBlock()) {
+            rightClickTimeDelay = 6;
+            handler.clickRightMouse();
+        }
     }
 
 
@@ -397,12 +520,16 @@ public class ControllerHandler {
         return newButton.isState() != oldState.isState();
     }
 
-    private boolean deadzone(float value, float min, float max) {
-        return value > max || value < min;
+    private boolean isPressed(ControllerButtonState newButton, ControllerButtonState oldState) {
+        return newButton.isState() != oldState.isState() && oldState.isState();
     }
 
-    private boolean deadzone(float value, double min, double max) {
-        return value > max || value < min;
+    private boolean deadzone(float value, float amount) {
+        return value > amount || value < -amount;
+    }
+
+    private boolean deadzone(float value, double amount) {
+        return value > amount || value < -amount;
     }
 
     private ISettingsConfig updateSettings() {

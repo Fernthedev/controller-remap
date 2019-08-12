@@ -1,6 +1,5 @@
 package com.github.fernthedev.controllerremapmod.core.joystick;
 
-import com.github.fernthedev.controllerremapmod.core.ControllerHandler;
 import com.github.fernthedev.controllerremapmod.mappings.Mapping;
 import lombok.Data;
 import lombok.Getter;
@@ -98,10 +97,6 @@ public class ControllerButtons {
             if(id == controllerButtons.DPAD_DOWN.getButtonIndex()) controllerButtons.DPAD_DOWN.setState(pressed);
             if(id == controllerButtons.DPAD_LEFT.getButtonIndex()) controllerButtons.DPAD_LEFT.setState(pressed);
             if(id == controllerButtons.DPAD_RIGHT.getButtonIndex()) controllerButtons.DPAD_RIGHT.setState(pressed);
-
-            if (pressed) {
-                ControllerHandler.getLogger().info(id + " was pressed");
-            }
 
             buttonID++;
         }

@@ -30,4 +30,23 @@ public interface IControlPlayer {
     boolean isFlying();
 
     void setSprinting(boolean sprint);
+
+    boolean getIsHittingBlock();
+
+    void rotateTowards(double yaw, double pitch);
+
+    void setRotation(double yaw, double pitch);
+
+    double getRotationPitch();
+    double getRotationYaw();
+
+    void resetBlockRemoving();
+
+    boolean staringAtAir();
+
+    void onStoppedUsingItem();
+
+    boolean staringAtBlock();
+
+    boolean isObjectMouseOverNull();
 }
