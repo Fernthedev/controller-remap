@@ -24,6 +24,9 @@ public interface IHandler {
     void clickRightMouse();
 
     void clickMouse(boolean leftClick,boolean leftClickHeld);
+
+    void clickBlock(boolean leftClickHeld);
+
     void clickMouse();
 
     boolean isInventory();
@@ -43,4 +46,8 @@ public interface IHandler {
     void displayOptions();
 
     float partialTicks();
+
+    void makeClickMouseTrue(boolean val);
+
+    void makeRightClickMouseTrue(boolean val);
 }

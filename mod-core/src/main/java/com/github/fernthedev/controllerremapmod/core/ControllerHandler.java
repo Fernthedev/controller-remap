@@ -100,6 +100,10 @@ public class ControllerHandler {
     private float lastRenderPartialTick; // Is useless, only kept in case.
 
 
+    private int leftToggleHolder = 0;
+    private int rightToggleHolder = 0;
+
+
     public void moveEvent(MovementInput event,IControlPlayer player) {
         if(!controller.isConnected()) return;
 
@@ -156,10 +160,43 @@ public class ControllerHandler {
 //            handler.printChat(rightClickTimeDelay + " is the delay called from " + called);
 // /////////////////////////////////////////
 
-            if (controller.getAxes().getLEFT_TRIGGER().getValue() < 0.5 && player.isHandActive()) {
-                player.onStoppedUsingItem();
+//            if (controller.getAxes().getLEFT_TRIGGER().getValue() < 0.5 && player.isHandActive()) {
+//                player.onStoppedUsingItem();
+//            }
+
+
+            // LEFT CLICK
+            if(controller.getAxes().getRIGHT_TRIGGER().getValue() > 0.5 && leftToggleHolder == 0) {
+                leftToggleHolder = 1;
+                handler.makeClickMouseTrue(controller.getAxes().getRIGHT_TRIGGER().getValue() > 0.5);
             }
 
+            if (controller.getAxes().getRIGHT_TRIGGER().getValue() < 0.5 && leftToggleHolder == 1) {
+                leftToggleHolder = 0;
+                handler.makeClickMouseTrue(controller.getAxes().getRIGHT_TRIGGER().getValue() > 0.5);
+            }
+
+
+            // RIGHT CLICK
+            if(controller.getAxes().getLEFT_TRIGGER().getValue() > 0.5 && rightToggleHolder == 0) {
+                rightToggleHolder = 1;
+                handler.makeRightClickMouseTrue(controller.getAxes().getLEFT_TRIGGER().getValue() > 0.5);
+            }
+
+            if (controller.getAxes().getLEFT_TRIGGER().getValue() < 0.5 && rightToggleHolder == 1) {
+                rightToggleHolder = 0;
+                handler.makeRightClickMouseTrue(controller.getAxes().getLEFT_TRIGGER().getValue() > 0.5);
+            }
+
+
+
+
+            ///////////////////////////////// OLD CLICK CODE
+
+//            if (controller.getAxes().getRIGHT_TRIGGER().getValue() > 0.5) {
+//                player.onStoppedUsingItem();
+//            }
+//
             boolean leftClickPress = leftClickPressTimeHeld == 0;
 
             if(!player.isObjectMouseOverNull() && player.staringAtMob() && controller.getAxes().getRIGHT_TRIGGER().getValue() > 0.5 && leftClickTimeDelay <= 0) leftClickPress = true;
@@ -172,21 +209,24 @@ public class ControllerHandler {
                 leftClickPress = false;
                 leftClickPressTimeHeld = 1;
             }
-
-            if( !(leftClickPress) || player.isObjectMouseOverNull() || !(player.staringAtBlock())) {
-                player.resetBlockRemoving();
-            }
-
-
-
-
+//
+//            if( (!leftClickPress && leftClickPressTimeHeld == 1) || player.isObjectMouseOverNull() || !(player.staringAtBlock())) {
+////                player.resetBlockRemoving();
+////                leftClickPressTimeHeld++;
+//            }
+//
+//
+//
+//
             handler.clickMouse(leftClickPress,controller.getAxes().getRIGHT_TRIGGER().getValue() > 0.5);
-
+//
             if(controller.getAxes().getRIGHT_TRIGGER().getValue() > 0.5 && leftClickTimeDelay <= 0) {
                 leftClickTimeDelay = 10;
 
             }
 
+
+            ///////////////////////////////// OLD CLICK CODE
 
 
             ////////////////////////////////
