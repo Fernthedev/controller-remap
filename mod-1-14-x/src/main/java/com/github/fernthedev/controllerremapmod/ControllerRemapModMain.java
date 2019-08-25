@@ -12,6 +12,7 @@ import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.IngameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
@@ -187,20 +188,34 @@ public class ControllerRemapModMain implements IHandler {
 
             if(clickMethod == null) {
                 clickMethod = ObfuscationReflectionHelper.findMethod(minecraftClass,"func_147116_af");
-                clickBlockMethod = ObfuscationReflectionHelper.findMethod(minecraftClass,"func_147115_a",boolean.class);
+//                clickBlockMethod = ObfuscationReflectionHelper.findMethod(minecraftClass,"func_147115_a",boolean.class);
                 clickMethod.setAccessible(true);
-                clickBlockMethod.setAccessible(true);
+//                clickBlockMethod.setAccessible(true);
             }
 
             if(leftClick) {
                 clickMethod.invoke(Minecraft.getInstance());
             }
 
-            clickBlockMethod.invoke(Minecraft.getInstance(),leftClickHeld);
+//            clickBlockMethod.invoke(Minecraft.getInstance(),leftClickHeld);
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
 
+    }
+
+    @Override
+    public void clickBlock(boolean leftClickHeld) {
+        try {
+            if (clickBlockMethod == null) {
+                clickBlockMethod = ObfuscationReflectionHelper.findMethod(minecraftClass, "func_147115_a", boolean.class);
+                clickBlockMethod.setAccessible(true);
+            }
+
+            clickBlockMethod.invoke(Minecraft.getInstance(), leftClickHeld);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -264,6 +279,16 @@ public class ControllerRemapModMain implements IHandler {
     @Override
     public float partialTicks() {
         return Minecraft.getInstance().getRenderPartialTicks();
+    }
+
+    @Override
+    public void makeClickMouseTrue(boolean val) {
+        KeyBinding.setKeyBindState(Minecraft.getInstance().gameSettings.keyBindAttack.getKey(), val);
+    }
+
+    @Override
+    public void makeRightClickMouseTrue(boolean val) {
+        KeyBinding.setKeyBindState(Minecraft.getInstance().gameSettings.keyBindUseItem.getKey(), val);
     }
 
     public ModContainer getModContainer() {
