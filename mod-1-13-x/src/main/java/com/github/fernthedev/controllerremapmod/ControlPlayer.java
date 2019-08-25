@@ -117,6 +117,7 @@ public class ControlPlayer implements IControlPlayer {
 
     @Override
     public void resetBlockRemoving() {
+        System.out.println("Reset block removing");
         Minecraft.getInstance().playerController.resetBlockRemoving();
     }
 
