@@ -44,7 +44,7 @@ public class TOMLSettingsConfig extends SettingsConfigBase {
     public void build(ForgeConfigSpec.Builder builder) {
         builder.push(MAIN_CATEGORY);
 
-        attackTimerTicksConfig =  builder.comment("The time in ticks it takes to launch another attack").defineInRange("attackTimerTicks",5,5,15);
+        attackTimerTicksConfig =  builder.comment("The time in ticks it takes to launch another attack").defineInRange("attackTimerTicks",5,5,40);
 
         sensitivityConfig = builder.comment("The sensitivity of the controller").defineInRange("sensitivity",1.0,0.01,5.0);
 
