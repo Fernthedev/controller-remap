@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module version="4">
-  <component name="ExternalSystem" externalSystem="GRADLE" externalSystemModuleGroup="com.github.fernthedev" externalSystemModuleType="sourceSet" externalSystemModuleVersion="1.0-SNAPSHOT" linkedProjectId="controller-remap:test" linkedProjectPath="$MODULE_DIR$/../.." rootProjectPath="$MODULE_DIR$/../.." />
-  <component name="TestModuleProperties" production-module="controller-remap.main" />
-</module>
