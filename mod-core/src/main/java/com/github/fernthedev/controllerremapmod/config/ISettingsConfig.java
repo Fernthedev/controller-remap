@@ -23,6 +23,9 @@ public interface ISettingsConfig {
     int getDropSpeed();
     void setDropSpeed(int dropSpeed);
 
+    int getAttackTimerTicks();
+    void setAttackTimerTicks(int attackTimerTicks);
+
     void save();
 
     void sync();

@@ -92,8 +92,10 @@ public class ControllerHandler {
 
     private int rightClickTimeDelay;
     private int leftClickTimeDelay;
+    private int leftClickTimeAttackDelay;
 
     private boolean sneakToggleButton;
+    private boolean sprintToggle;
 
     private boolean sneak;
 
@@ -116,7 +118,7 @@ public class ControllerHandler {
 
         if(!handler.isGuiOpen()) {
 
-            double leftDeadzone = 0.3;
+            double leftDeadzone = updateSettings().getDeadzoneLeft();
 
             if (deadzone(controller.getAxes().getVERTICAL_LEFT_STICKER().getValue(), leftDeadzone))
                 event.moveForward = -1 * controller.getAxes().getVERTICAL_LEFT_STICKER().getValue();
@@ -129,6 +131,10 @@ public class ControllerHandler {
             }
 
             if(!player.isFlying()) {
+                if(controller.getButtons().getDPAD_RIGHT().isState()) {
+                    sprintToggle = !sprintToggle;
+                }
+
                 if (controller.getButtons().getRIGHT_STICKER().isState()) {
 
                     if (!sneakToggleButton) {
@@ -144,17 +150,25 @@ public class ControllerHandler {
                 event.sneak = true;
 
 
-                if (this.sneak) {
+
+
+                if (sneak) {
                     event.moveStrafe = (float) ((double) event.moveStrafe * 0.3D);
                     event.moveForward = (float) ((double) event.moveForward * 0.3D);
                     player.setSprinting(false);
                 }
+
+
             }else{
                 if(controller.getButtons().getRIGHT_STICKER().isState()) {
                     event.sneak = controller.getButtons().getRIGHT_STICKER().isState();
                 }
             }
 
+
+            // Sprinting
+            if(sprintToggle && !sneak)
+                player.setSprinting(true);
 
 
 //            handler.printChat(rightClickTimeDelay + " is the delay called from " + called);
@@ -199,10 +213,14 @@ public class ControllerHandler {
 //
             boolean leftClickPress = leftClickPressTimeHeld == 0;
 
-            if(!player.isObjectMouseOverNull() && player.staringAtMob() && controller.getAxes().getRIGHT_TRIGGER().getValue() > 0.5 && leftClickTimeDelay <= 0) leftClickPress = true;
+            if(!player.isObjectMouseOverNull() && player.staringAtMob() && controller.getAxes().getRIGHT_TRIGGER().getValue() > 0.5 && leftClickTimeAttackDelay <= 0) {
+                leftClickPress = true;
+                leftClickTimeAttackDelay = updateSettings().getAttackTimerTicks();
+            }
 
             if(controller.getAxes().getRIGHT_TRIGGER().getValue() > 0.5 && !player.isObjectMouseOverNull() && player.staringAtAir() && oldMoveAxes.getRIGHT_TRIGGER().getValue() < 0.5) {
                 leftClickPress = true;
+                leftClickPressTimeHeld = 1;
             }
 
             if(controller.getAxes().getRIGHT_TRIGGER().getValue() < 0.5) {
@@ -466,6 +484,10 @@ public class ControllerHandler {
 
         if(leftClickTimeDelay > 0) {
             leftClickTimeDelay--;
+        }
+
+        if(leftClickTimeAttackDelay > 0) {
+            leftClickTimeAttackDelay--;
         }
 
         if(rightClickTimeDelay > 0) {

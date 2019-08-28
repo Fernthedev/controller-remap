@@ -47,7 +47,7 @@ allprojects {
     }
 
     group 'com.github.fernthedev'
-    project.ext.modVersion = "1.2.2"
+    project.ext.modVersion = "1.2.3"
 
 
 

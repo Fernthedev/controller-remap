@@ -17,6 +17,8 @@ public abstract class SettingsConfigBase implements ISettingsConfig {
 
     public static final String MAIN_CATEGORY = "Controller";
 
+    @Setter
+    protected int attackTimerTicks;
 
     @Setter
     protected double sensitivity = 1.0;
