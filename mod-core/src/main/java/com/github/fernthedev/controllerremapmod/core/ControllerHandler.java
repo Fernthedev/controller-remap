@@ -137,7 +137,11 @@ public class ControllerHandler {
                 event.jump = controller.getButtons().getA().isState();
             }
 
-            if(!player.isFlying()) {
+            if(player.isFlying() || player.isSwimming()) {
+                if(controller.getButtons().getRIGHT_STICKER().isState()) {
+                    event.sneak = controller.getButtons().getRIGHT_STICKER().isState();
+                }
+            }else{
                 if(controller.getButtons().getDPAD_RIGHT().isState()) {
                     sprintToggle = !sprintToggle;
                 }
@@ -154,7 +158,7 @@ public class ControllerHandler {
                 }
 
                 if(sneak)
-                event.sneak = true;
+                    event.sneak = true;
 
 
 
@@ -165,11 +169,6 @@ public class ControllerHandler {
                     player.setSprinting(false);
                 }
 
-
-            }else{
-                if(controller.getButtons().getRIGHT_STICKER().isState()) {
-                    event.sneak = controller.getButtons().getRIGHT_STICKER().isState();
-                }
             }
 
 
@@ -347,7 +346,7 @@ public class ControllerHandler {
         // Drops item
         if(!handler.isGuiOpen()) {
 
-            if (controller.getButtons().getB().isState()) {
+            if (controller.getButtons().getB().isState() && !bHeldToClose) {
 
                 if(dropTime == 0) {
                     player.dropItem();
@@ -512,6 +511,10 @@ public class ControllerHandler {
 
 
 
+        boolean shouldResetToClose = !handler.isGuiOpen() && !controller.getButtons().getB().isState() && bHeldToClose;
+
+        if(shouldResetToClose) bHeldToClose = false;
+
         if(handler.isGuiOpen()) {
             //Closes GUI
             if (controller.getButtons().getB().isState()) {
@@ -520,9 +523,7 @@ public class ControllerHandler {
             }
         }
 
-        boolean shouldResetToClose = !handler.isGuiOpen() && !controller.getButtons().getB().isState() && bHeldToClose;
 
-        if(shouldResetToClose) bHeldToClose = false;
 
         if(leftClickTimeDelay > 0) {
             leftClickTimeDelay--;
@@ -587,7 +588,7 @@ public class ControllerHandler {
             }
 
             while (rightClickPress) {
-                handler.getLogger().info(rightClickPress + " held: " + rightClickTimeHeld + " delay: " + rightClickTimeDelay + " time " + System.currentTimeMillis());
+//                handler.getLogger().info(rightClickPress + " held: " + rightClickTimeHeld + " delay: " + rightClickTimeDelay + " time " + System.currentTimeMillis());
                 rightClickPress = false;
                 rightClick(player);
             }
@@ -597,7 +598,7 @@ public class ControllerHandler {
 
             if (controller.getAxes().getLEFT_TRIGGER().getValue() > 0.5 && rightClickTimeDelay == 0 && !player.isHandActive()) {
                 rightClick(player);
-                handler.getLogger().info(rightClickPress + " held: " + rightClickTimeHeld + " delay: " + rightClickTimeDelay + " time " + System.currentTimeMillis());
+//                handler.getLogger().info(rightClickPress + " held: " + rightClickTimeHeld + " delay: " + rightClickTimeDelay + " time " + System.currentTimeMillis());
             }
 
         }

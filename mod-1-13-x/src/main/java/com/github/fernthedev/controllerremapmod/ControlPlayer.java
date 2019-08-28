@@ -140,4 +140,9 @@ public class ControlPlayer implements IControlPlayer {
     public boolean isObjectMouseOverNull() {
         return Minecraft.getInstance().objectMouseOver == null;
     }
+
+    @Override
+    public boolean isSwimming() {
+        return player.isSwimming();
+    }
 }
