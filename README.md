@@ -8,6 +8,10 @@ The reason is because of what new updated libraries 1.13+ bring that allow this 
 
 Version releases can be found here: [https://github.com/Fernthedev/controller-remap/releases](https://github.com/Fernthedev/controller-remap/releases)
 
+## Usage
+In order to use the controller, you must first make sure you are using the correct controller button mapping. The mapping tells the mod what buttons are which due to PS4/Xbox or a custom controller using their own set of button ids.
+To do this, open the controller settings (found in options or pressing down D-PAD) and move the slider until you find the setting appropiate for the controller.
+
 ## Features
 
 - Native support for Xbox One and/or PS4 controller (Only 1 controller at once)
