@@ -16,6 +16,8 @@ import java.util.Objects;
 
 public class TOMLSettingsConfig extends SettingsConfigBase {
 
+    private ForgeConfigSpec.IntValue attackTimerTicksConfig;
+
     private ForgeConfigSpec.DoubleValue sensitivityConfig;
 
     private ForgeConfigSpec.DoubleValue deadzoneLeftConfig;
@@ -41,6 +43,8 @@ public class TOMLSettingsConfig extends SettingsConfigBase {
 
     public void build(ForgeConfigSpec.Builder builder) {
         builder.push(MAIN_CATEGORY);
+
+        attackTimerTicksConfig =  builder.comment("The time in ticks it takes to launch another attack").defineInRange("attackTimerTicks",5,5,15);
 
         sensitivityConfig = builder.comment("The sensitivity of the controller").defineInRange("sensitivity",1.0,0.01,5.0);
 
@@ -77,6 +81,8 @@ public class TOMLSettingsConfig extends SettingsConfigBase {
 
     private void load(ModConfig config) {
         this.modConfig = config;
+
+        attackTimerTicks = attackTimerTicksConfig.get();
 
         sensitivity = sensitivityConfig.get();
 
@@ -122,6 +128,7 @@ public class TOMLSettingsConfig extends SettingsConfigBase {
 
     @Override
     public void save() {
+        setAndSave(attackTimerTicksConfig.getPath(), attackTimerTicks);
         setAndSave(sensitivityConfig.getPath(),sensitivity);
         setAndSave(selectedMappingConfig.getPath(),FilenameUtils.removeExtension(selectedMapping.getFile().getName()));
         setAndSave(deadzoneLeftConfig.getPath(), deadzoneLeft);

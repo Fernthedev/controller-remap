@@ -21,6 +21,7 @@ public class ConfigGUI extends GuiScreen implements IConfigGUI {
     private GuiSlider deadzoneRight;
     private GuiTextSlider mappingListSlider;
 
+    private GuiSlider attackTimerTicks;
     private GuiSlider scrollSpeed;
     private GuiSlider dropSpeed;
 
@@ -74,6 +75,13 @@ public class ConfigGUI extends GuiScreen implements IConfigGUI {
         maxY = scaledHeight + (- 28);
 
 
+        // Attack timer ticks
+        attackTimerTicks = new GuiSlider(getId(), width / 2 - 100, getButtonY(), "Attack Timer (Ticks): ", 5, 15, settings.getAttackTimerTicks(), handler -> {
+            settings.setAttackTimerTicks(attackTimerTicks.getValueInt());
+            settings.sync();
+        });
+
+        attackTimerTicks.showDecimal = false;
 
         // Scroll speed speed
         scrollSpeed = new GuiSlider(getId(),width / 2 - 100, getButtonY(), "Scroll Speed (Ticks): ", 1, 100, settings.getScrollSpeed(), slider -> {
@@ -193,6 +201,7 @@ public class ConfigGUI extends GuiScreen implements IConfigGUI {
 //            mappingListSlider.enabled = false;
 //        }
 
+        addButton(attackTimerTicks);
         addButton(doneButton);
         addButton(sensitivity);
         addButton(mappingListSlider);
