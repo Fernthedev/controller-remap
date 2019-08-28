@@ -67,7 +67,7 @@ public class ConfigGUI extends Screen implements IConfigGUI {
 
 
         // Attack timer ticks
-        attackTimerTicks = new GuiSlider(width / 2 - 100, getButtonY(), "Attack Timer (Ticks): ", 5, 15, settings.getAttackTimerTicks(), handler -> {
+        attackTimerTicks = new GuiSlider(width / 2 - 100, getButtonY(), "Attack Timer (Ticks): ", 5, 40, settings.getAttackTimerTicks(), handler -> {
             settings.setAttackTimerTicks(attackTimerTicks.getValueInt());
             settings.sync();
         }, slider -> {

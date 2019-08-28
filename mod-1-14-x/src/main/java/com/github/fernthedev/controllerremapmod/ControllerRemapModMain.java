@@ -6,6 +6,7 @@ import com.github.fernthedev.controllerremapmod.core.ControllerHandler;
 import com.github.fernthedev.controllerremapmod.core.IHandler;
 import com.github.fernthedev.controllerremapmod.gui.ConfigGUI;
 import lombok.Getter;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.overlay.PlayerTabOverlayGui;
 import net.minecraft.client.gui.screen.ChatScreen;
@@ -183,28 +184,6 @@ public class ControllerRemapModMain implements IHandler {
     }
 
     @Override
-    public void clickMouse(boolean leftClick,boolean leftClickHeld) {
-        try {
-
-            if(clickMethod == null) {
-                clickMethod = ObfuscationReflectionHelper.findMethod(minecraftClass,"func_147116_af");
-//                clickBlockMethod = ObfuscationReflectionHelper.findMethod(minecraftClass,"func_147115_a",boolean.class);
-                clickMethod.setAccessible(true);
-//                clickBlockMethod.setAccessible(true);
-            }
-
-            if(leftClick) {
-                clickMethod.invoke(Minecraft.getInstance());
-            }
-
-//            clickBlockMethod.invoke(Minecraft.getInstance(),leftClickHeld);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    @Override
     public void clickBlock(boolean leftClickHeld) {
         try {
             if (clickBlockMethod == null) {
@@ -289,6 +268,53 @@ public class ControllerRemapModMain implements IHandler {
     @Override
     public void makeRightClickMouseTrue(boolean val) {
         KeyBinding.setKeyBindState(Minecraft.getInstance().gameSettings.keyBindUseItem.getKey(), val);
+    }
+
+    @Override
+    public float deltaTime() {
+        return Minecraft.getInstance().getTickLength();
+    }
+
+    @Override
+    public void renderPlayerListTAB(boolean val) {
+        if(!isGuiOpen())
+        KeyBinding.setKeyBindState(Minecraft.getInstance().gameSettings.keyBindPlayerList.getKey(), val);
+    }
+
+    @Override
+    public double getMouseX() {
+        return Minecraft.getInstance().mouseHelper.getMouseX();
+    }
+
+    @Override
+    public double getMouseY() {
+        return Minecraft.getInstance().mouseHelper.getMouseY();
+    }
+
+    @Override
+    public boolean isMouseGrabbed() {
+        return Minecraft.getInstance().mouseHelper.isMouseGrabbed();
+    }
+
+    @Override
+    public void shiftKeyOn(boolean val) {
+        if(isGuiOpen())
+            KeyBinding.setKeyBindState(Minecraft.getInstance().gameSettings.keyBindSneak.getKey(), val);
+    }
+
+    @Override
+    public long getWindowIDGlfw() {
+        return Minecraft.getInstance().mainWindow.getHandle();
+    }
+
+    @Override
+    public MainWindow getMainWindow() {
+        return Minecraft.getInstance().mainWindow;
+    }
+
+    @Override
+    public void mouseClickedScreen(double xScale, double yScale, int glfwMouseButton) {
+        Minecraft.getInstance().currentScreen.mouseClicked(xScale, yScale, glfwMouseButton);
     }
 
     public ModContainer getModContainer() {

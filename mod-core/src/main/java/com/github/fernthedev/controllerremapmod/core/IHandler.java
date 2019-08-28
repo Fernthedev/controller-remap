@@ -1,6 +1,7 @@
 package com.github.fernthedev.controllerremapmod.core;
 
 import com.github.fernthedev.controllerremapmod.config.IConfigHandler;
+import net.minecraft.client.MainWindow;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.file.Path;
@@ -22,8 +23,6 @@ public interface IHandler {
     boolean isGuiOpen();
 
     void clickRightMouse();
-
-    void clickMouse(boolean leftClick,boolean leftClickHeld);
 
     void clickBlock(boolean leftClickHeld);
 
@@ -50,4 +49,22 @@ public interface IHandler {
     void makeClickMouseTrue(boolean val);
 
     void makeRightClickMouseTrue(boolean val);
+
+    float deltaTime();
+
+    void renderPlayerListTAB(boolean val);
+
+    double getMouseX();
+
+    double getMouseY();
+
+    boolean isMouseGrabbed();
+
+    void shiftKeyOn(boolean val);
+
+    long getWindowIDGlfw();
+
+    MainWindow getMainWindow();
+
+    void mouseClickedScreen(double xScale, double yScale, int glfwMouseButton);
 }

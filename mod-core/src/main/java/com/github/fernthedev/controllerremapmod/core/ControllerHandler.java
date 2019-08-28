@@ -16,6 +16,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 
+import static org.lwjgl.glfw.GLFW.*;
+
 public class ControllerHandler {
 
     private static JoystickController controller;
@@ -82,28 +84,30 @@ public class ControllerHandler {
 
     private int scrollTime;
     private int maxScrollTime = 6;
-
     private int dropTime;
 
+
+    private boolean bHeldToClose;
+    private boolean aHeldToClick;
+    private boolean quickMoveToClick;
+
     private int leftClickPressTimeHeld;
-    private boolean waitForGuiClose;
-
     private int rightClickTimeHeld;
-
     private int rightClickTimeDelay;
     private int leftClickTimeDelay;
     private int leftClickTimeAttackDelay;
 
     private boolean sneakToggleButton;
     private boolean sprintToggle;
-
     private boolean sneak;
 
     private float lastRenderPartialTick; // Is useless, only kept in case.
 
-
     private int leftToggleHolder = 0;
     private int rightToggleHolder = 0;
+
+    private boolean renderPlayerList;
+    private boolean oldRenderPlayerList;
 
 
     public void moveEvent(MovementInput event,IControlPlayer player) {
@@ -115,6 +119,9 @@ public class ControllerHandler {
             oldMoveButtons = controller.getButtons();
             oldMoveAxes = controller.getAxes();
         }
+
+        boolean leftClickPress = leftClickPressTimeHeld == 0;
+        boolean shiftPress = false;
 
         if(!handler.isGuiOpen()) {
 
@@ -211,7 +218,7 @@ public class ControllerHandler {
 //                player.onStoppedUsingItem();
 //            }
 //
-            boolean leftClickPress = leftClickPressTimeHeld == 0;
+
 
             if(!player.isObjectMouseOverNull() && player.staringAtMob() && controller.getAxes().getRIGHT_TRIGGER().getValue() > 0.5 && leftClickTimeAttackDelay <= 0) {
                 leftClickPress = true;
@@ -236,7 +243,7 @@ public class ControllerHandler {
 //
 //
 //
-            handler.clickMouse(leftClickPress,controller.getAxes().getRIGHT_TRIGGER().getValue() > 0.5);
+
 //
             if(controller.getAxes().getRIGHT_TRIGGER().getValue() > 0.5 && leftClickTimeDelay <= 0) {
                 leftClickTimeDelay = 10;
@@ -277,6 +284,8 @@ public class ControllerHandler {
 
 
 
+        if(leftClickPress)
+            handler.clickMouse();
 
 
 
@@ -284,24 +293,27 @@ public class ControllerHandler {
 
 
 
-        if(isPressed(controller.getButtons().getY(),oldMoveButtons.getY())) {
+        if(isPressed(controller.getButtons().getY(), oldMoveButtons.getY())) {
             boolean opened = handler.isInventory();
 
-            if(opened) {
-                //Equivalent to (Minecraft.getMinecraft().displayGuiScreen(null);)
-                handler.closeGUI();
-            }else{
+            if(!opened) {
                 //Equivalent to (Minecraft.getMinecraft().displayGuiScreen(new GuiInventory(Minecraft.getMinecraft().thePlayer));)
                 player.openInventory();
             }
         }
 
+
+
         //Basically does what TAB would do
-        if(checkToggle(controller.getButtons().getEXTRA_BUTTON(),oldMoveButtons.getEXTRA_BUTTON())) {
-            handler.renderPlayerList(true);
-        }else{
-            handler.renderPlayerList(false);
+        if(checkToggle(controller.getButtons().getEXTRA_BUTTON(),oldMoveButtons.getEXTRA_BUTTON()) && !handler.isGuiOpen()) {
+            renderPlayerList = !renderPlayerList;
         }
+
+        if(renderPlayerList != oldRenderPlayerList && !handler.isGuiOpen()) {
+            handler.renderPlayerListTAB(renderPlayerList);
+            oldRenderPlayerList = renderPlayerList;
+        }
+
 
 
         //Basically does (Minecraft.getMinecraft().displayGuiScreen(new GuiChat());)
@@ -402,10 +414,10 @@ public class ControllerHandler {
             //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationPitch += controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue();)
             if (deadzone(controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue(), deadzoneAmount)) {
                 setRotation = true;
-                handler.getLogger().info("Deadzone pitch ("
-                        + deadzone(controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue(), deadzoneAmount) +
-                        ") oldPitch [" + oldPitch + "] + (newPitch [" + newPitch + "]" +
-                        " - oldPitch [" + oldPitch + "]) * handler.partialTicks() [" + tick + "] = " + interpolatedPitch);
+//                handler.getLogger().debug("Deadzone pitch ("
+//                        + deadzone(controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue(), deadzoneAmount) +
+//                        ") oldPitch [" + oldPitch + "] + (newPitch [" + newPitch + "]" +
+//                        " - oldPitch [" + oldPitch + "]) * handler.partialTicks() [" + tick + "] = " + interpolatedPitch);
 //                player.addRotationPitch((float) interpolatedPitch);
             } else {
                 interpolatedPitch = (float) oldPitch;
@@ -414,10 +426,10 @@ public class ControllerHandler {
 
             if (deadzone(controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue(), deadzoneAmount)) {
                 setRotation = true;
-                handler.getLogger().info("Deadzone yaw ("
-                        + deadzone(controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue(), deadzoneAmount) +
-                        ") oldYaw [" + oldYaw + "] + (newYaw [" + newYaw + "]" +
-                        " - oldYaw [" + oldYaw + "]) * handler.partialTicks() [" + tick + "] = " + interpolatedYaw);
+//                handler.getLogger().debug("Deadzone yaw ("
+//                        + deadzone(controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue(), deadzoneAmount) +
+//                        ") oldYaw [" + oldYaw + "] + (newYaw [" + newYaw + "]" +
+//                        " - oldYaw [" + oldYaw + "]) * handler.partialTicks() [" + tick + "] = " + interpolatedYaw);
 //                player.addRotationYaw((float) interpolatedYaw);
             } else {
                 interpolatedYaw = (float) oldYaw;
@@ -429,6 +441,34 @@ public class ControllerHandler {
             //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationYaw += controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue();)
 //                player.addRotationYaw((float) (controller.getAxes().getVERTICAL_RIGHT_STICKER().getValue() * updateSettings().getSensitivity())); // -1 IS DOWN, 1 IS UP, 0 IS STATELESS
 
+        }
+
+        if (handler.isGuiOpen() && !handler.isMouseGrabbed()) {
+            double xCord = handler.getMouseX();
+            double yCord = handler.getMouseY();
+
+            double multiplier = 10;
+
+            double deadzoneAmount = updateSettings().getDeadzoneRight();
+
+            //Equivalent to (Minecraft.getMinecraft().thePlayer.rotationPitch += controller.getAxes().getHORIZONTAL_RIGHT_STICKER().getValue();)
+            boolean doMove = false;
+
+            if (deadzone(controller.getAxes().getHORIZONTAL_LEFT_STICKER().getValue(), deadzoneAmount)) {
+                doMove = true;
+
+                xCord += controller.getAxes().getHORIZONTAL_LEFT_STICKER().getValue() * multiplier;
+            }
+
+            if (deadzone(controller.getAxes().getVERTICAL_LEFT_STICKER().getValue(), deadzoneAmount)) {
+                doMove = true;
+
+                yCord += controller.getAxes().getVERTICAL_LEFT_STICKER().getValue() * multiplier;
+            }
+
+
+            if(doMove)
+                glfwSetCursorPos(handler.getWindowIDGlfw(), xCord, yCord);
         }
 //        if(!handler.isGuiOpen()) {
 //
@@ -471,16 +511,18 @@ public class ControllerHandler {
         }
 
 
+
         if(handler.isGuiOpen()) {
             //Closes GUI
-            if (isPressed(controller.getButtons().getB(), oldButtons.getB())) {
-                if (!waitForGuiClose) {
-                    //Equivalent to (Minecraft.getMinecraft().displayGuiScreen(null);)
-                    handler.closeGUI();
-                    waitForGuiClose = true;
-                }
+            if (controller.getButtons().getB().isState()) {
+                bHeldToClose = true;
+                handler.closeGUI();
             }
         }
+
+        boolean shouldResetToClose = !handler.isGuiOpen() && !controller.getButtons().getB().isState() && bHeldToClose;
+
+        if(shouldResetToClose) bHeldToClose = false;
 
         if(leftClickTimeDelay > 0) {
             leftClickTimeDelay--;
@@ -557,6 +599,44 @@ public class ControllerHandler {
                 rightClick(player);
                 handler.getLogger().info(rightClickPress + " held: " + rightClickTimeHeld + " delay: " + rightClickTimeDelay + " time " + System.currentTimeMillis());
             }
+
+        }
+
+
+
+        if(handler.isGuiOpen()) {
+            /////////////////////////
+            if(!controller.getButtons().getA().isState()) aHeldToClick = false;
+
+            if(controller.getButtons().getA().isState() && !aHeldToClick) {
+                aHeldToClick = true;
+                double xScale = handler.getMouseX() * (double)handler.getMainWindow().getScaledWidth() / (double)handler.getMainWindow().getWidth();
+                double yScale = handler.getMouseY() * (double) handler.getMainWindow().getScaledHeight() / (double)handler.getMainWindow().getHeight();
+
+                handler.mouseClickedScreen(xScale, yScale, GLFW_MOUSE_BUTTON_1);
+            }
+
+            ///////////////////////////////////////////
+
+            if(handler.isInventory()) {
+                if (!controller.getButtons().getY().isState()) {
+                    quickMoveToClick = false;
+                }
+
+                if (controller.getButtons().getY().isState() && !quickMoveToClick) {
+                    quickMoveToClick = true;
+
+
+
+                    double xScale = handler.getMouseX() * (double)handler.getMainWindow().getScaledWidth() / (double)handler.getMainWindow().getWidth();
+                    double yScale = handler.getMouseY() * (double) handler.getMainWindow().getScaledHeight() / (double)handler.getMainWindow().getHeight();
+
+                    handler.shiftKeyOn(true);
+                    handler.mouseClickedScreen(xScale, yScale, GLFW_MOUSE_BUTTON_1);
+                    handler.shiftKeyOn(false);
+                }
+            }
+
 
         }
 
