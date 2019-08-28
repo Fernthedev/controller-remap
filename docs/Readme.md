@@ -19,6 +19,7 @@ Version releases can be found here: https://github.com/Fernthedev/controller-rem
 - ~~You can only place blocks with left trigger, features such as shields or bows do not work. A workaround is being worked on, no promises though.~~ This was fixed in version [1.2.2](https://github.com/Fernthedev/controller-remap/releases/tag/1.2.2)
 - You can't navigate through menus or inventory. I have no idea how to implement this yet, until then just attempt to use your mouse.
 - The camera randomly moves slower/faster with same sensitivity and/or it stutters. This is an issue with how it's been implemented since it is basically frame bound. This allows it to look smooth in over 100 fps but incosistent with different frame rates. ~~A workaround for this is being worked on, but the result is very slow and stuttery for now.~~ 
+- Vehicles such as boats do not move with controller. This a issue and is being looked into, for now use WASD.
 
 
 ### Mappings
