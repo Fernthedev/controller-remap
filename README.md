@@ -1,4 +1,3 @@
-https://github.com/Fernthedev/controller-remap/releases
 ## Welcome to Controller Remap (Beta)
 
 This is a mod for Minecraft Java Edition that allows you to use a PS4 or Xbox One controller or even a custom controller with [custom mappings!](#mappings)
