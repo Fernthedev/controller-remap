@@ -11,7 +11,7 @@ Version releases can be found here: [https://github.com/Fernthedev/controller-re
 ## Features
 
 - Native support for Xbox One and/or PS4 controller (Only 1 controller at once)
-- Support for mappings for [custom controllers](https://github.com/Fernthedev/controller-remap/tree/master/docs#mappings)
+- Support for mappings for [custom controllers](#mappings)
 - Controls are based on the console versions of Minecraft.
 - Settings (can be found by pressing down d-pad arrow or by going to options) 
 
@@ -20,6 +20,9 @@ Version releases can be found here: [https://github.com/Fernthedev/controller-re
   - Mapping chooser
   - Drop Speed (in ticks) How long is the drop button (B) needed to be held for it to start dropping items
   - Scroll Speed (in ticks) How long is the scroll button (Bumper Left/Right) needed to be held for it to start scrolling.
+  
+- Toggle Sprint (D-Pad right)
+- Auto Attack (hold right trigger) with adjustable delay in settings
 
 
 ### Known Bugs or missing features 
