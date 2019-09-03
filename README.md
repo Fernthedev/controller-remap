@@ -21,6 +21,7 @@ To do this, open the controller settings (found in options or pressing down D-PA
 - Native support for Xbox One and/or PS4 controller (Only 1 controller at once)
 - Support for mappings for [custom controllers](#mappings)
 - Controls are based on the console versions of Minecraft.
+- You can control the cursor in menus with the joystick.*
 - Settings (can be found by pressing down d-pad arrow or by going to options) 
 
   - Sensitivity settings
@@ -31,6 +32,8 @@ To do this, open the controller settings (found in options or pressing down D-PA
   
 - Toggle Sprint (D-Pad right)
 - Auto Attack (hold right trigger) with adjustable delay in settings
+
+*Does not work very well due to Minecraft's hard coded keyboard/mouse usage. Things such as inventory item movement etc. do not exactly work.
 
 
 ### Known Bugs or missing features 
