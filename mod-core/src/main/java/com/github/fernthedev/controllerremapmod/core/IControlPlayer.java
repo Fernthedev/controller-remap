@@ -49,4 +49,6 @@ public interface IControlPlayer {
     boolean staringAtBlock();
 
     boolean isObjectMouseOverNull();
+
+    boolean isSwimming();
 }

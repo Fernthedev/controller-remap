@@ -4,5 +4,9 @@
     <annotationProcessing>
       <profile default="true" name="Default" enabled="true" />
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="controller-remap.mod-1-13-x.main" target="1.8" />
+      <module name="controller-remap.mod-1-13-x.test" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
