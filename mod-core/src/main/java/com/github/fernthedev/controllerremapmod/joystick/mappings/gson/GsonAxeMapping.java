@@ -1,6 +1,6 @@
-package com.github.fernthedev.controllerremapmod.mappings.gson;
+package com.github.fernthedev.controllerremapmod.joystick.mappings.gson;
 
-import com.github.fernthedev.controllerremapmod.mappings.AxesMapping;
+import com.github.fernthedev.controllerremapmod.joystick.mappings.AxesMapping;
 import lombok.AccessLevel;
 import lombok.Getter;
 

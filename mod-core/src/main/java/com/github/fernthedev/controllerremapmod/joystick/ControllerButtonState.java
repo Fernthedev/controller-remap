@@ -1,4 +1,4 @@
-package com.github.fernthedev.controllerremapmod.core.joystick;
+package com.github.fernthedev.controllerremapmod.joystick;
 
 import lombok.*;
 
@@ -7,13 +7,13 @@ import lombok.*;
 @RequiredArgsConstructor
 public class ControllerButtonState {
     @Setter(AccessLevel.NONE)
-    private boolean isHeld;
+    private boolean held;
 
     void setHeld(boolean held) {
-        if(held != this.isHeld) {
+        if(held != this.held) {
             pressed = 0;
         }
-        this.isHeld = held;
+        this.held = held;
     }
 
     @NonNull
@@ -24,7 +24,7 @@ public class ControllerButtonState {
     private int pressed = 0;
 
     public boolean isPressed() {
-        if(pressed == 0 && isHeld) {
+        if(pressed == 0 && held) {
             pressed--;
             return true;
         } else {

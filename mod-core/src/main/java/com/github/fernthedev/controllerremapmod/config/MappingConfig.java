@@ -1,8 +1,7 @@
 package com.github.fernthedev.controllerremapmod.config;
 
-import com.github.fernthedev.controllerremapmod.mappings.Mapping;
-import com.github.fernthedev.controllerremapmod.mappings.xbox.XboxOneMapping;
-import com.google.gson.Gson;
+import com.github.fernthedev.controllerremapmod.joystick.mappings.Mapping;
+import com.github.fernthedev.controllerremapmod.joystick.mappings.xbox.XboxOneMapping;
 import lombok.Data;
 import lombok.NonNull;
 import okio.BufferedSink;

@@ -1,6 +1,6 @@
-package com.github.fernthedev.controllerremapmod.core.joystick;
+package com.github.fernthedev.controllerremapmod.joystick;
 
-import com.github.fernthedev.controllerremapmod.mappings.Mapping;
+import com.github.fernthedev.controllerremapmod.joystick.mappings.Mapping;
 import lombok.*;
 
 import java.nio.ByteBuffer;
@@ -21,6 +21,9 @@ public class JoystickController {
     @NonNull
     private Mapping mapping;
 
+    private ControllerButtons controllerButtons;
+    private ControllerAxis controllerAxis;
+
     /**
      * Checks if controller is connected
      * @return true if connected, false otherwise
@@ -31,7 +34,7 @@ public class JoystickController {
 
     /**
      * Gets name of controller
-     * @return JoystickController name such as “Microsoft PC-joystick driver", null if controller not found
+     * @return JoystickController name such as “Microsoft PC-com.github.fernthedev.joystick driver", null if controller not found
      */
     public String getName() {
         validateConnected();
@@ -59,13 +62,13 @@ public class JoystickController {
         }
     }
 
-    private ControllerButtons controllerButtons;
+
 
     public ControllerButtons getButtons() {
         validateConnected();
 
         if(controllerButtons == null) {
-            controllerButtons = ControllerButtons.buildControllerButtons(controllerIndex, mapping);
+            return controllerButtons = ControllerButtons.buildControllerButtons(controllerIndex, mapping);
         }
 
         return controllerButtons.getControllerButtons(controllerIndex,mapping);
@@ -73,7 +76,12 @@ public class JoystickController {
 
     public ControllerAxis getAxes() {
         validateConnected();
-        return ControllerAxis.getAxis(controllerIndex,mapping);
+
+        if(controllerAxis == null) {
+            return controllerAxis = ControllerAxis.buildAxis(controllerIndex, mapping);
+        }
+
+        return controllerAxis.getAxis(controllerIndex, mapping);
     }
 
     /**

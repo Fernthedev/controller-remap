@@ -1,10 +1,9 @@
-package com.github.fernthedev.controllerremapmod.core.joystick;
+package com.github.fernthedev.controllerremapmod.joystick;
 
-import com.github.fernthedev.controllerremapmod.mappings.Mapping;
+import com.github.fernthedev.controllerremapmod.joystick.mappings.Mapping;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NonNull;
-import org.apache.commons.lang3.Validate;
 
 import java.nio.ByteBuffer;
 
@@ -17,6 +16,9 @@ import static org.lwjgl.glfw.GLFW.glfwGetJoystickButtons;
 public class ControllerButtons {
 
 
+    /**
+     * Mapping
+     */
     private Mapping mapping;
 
     private ControllerButtons(@NonNull Mapping mapping) {
@@ -42,6 +44,9 @@ public class ControllerButtons {
     private ControllerButtonState DPAD_DOWN;
     private ControllerButtonState DPAD_LEFT;
 
+    /**
+     * Called when constructed
+     */
     private void build() {
         A = new ControllerButtonState(mapping.getButtonMapping().getA());
         B = new ControllerButtonState(mapping.getButtonMapping().getB());
@@ -62,7 +67,10 @@ public class ControllerButtons {
         DPAD_DOWN = new ControllerButtonState(mapping.getButtonMapping().getDPAD_DOWN());
         DPAD_LEFT = new ControllerButtonState(mapping.getButtonMapping().getDPAD_LEFT());
     }
-    
+
+    /**
+     * Remaps the ids of the button mappings.
+     */
     private void remap() {
         A.setButtonIndex(mapping.getButtonMapping().getA());
         B.setButtonIndex(mapping.getButtonMapping().getB());
@@ -83,7 +91,13 @@ public class ControllerButtons {
         DPAD_DOWN.setButtonIndex(mapping.getButtonMapping().getDPAD_DOWN());
         DPAD_LEFT.setButtonIndex(mapping.getButtonMapping().getDPAD_LEFT());
     }
-    
+
+    /**
+     * Constructs the controller button instance
+     * @param controllerIndex The controller index such as {@link org.lwjgl.glfw.GLFW#GLFW_JOYSTICK_1}
+     * @param mapping The mapping type. You can make your own or use some from the {@link com.github.fernthedev.controllerremapmod.joystick.mappings} such as {@link com.github.fernthedev.controllerremapmod.joystick.mappings.xbox.XboxOneMapping}
+     * @return The instance of controller buttons
+     */
     public static ControllerButtons buildControllerButtons(int controllerIndex, @NonNull Mapping mapping) {
         ControllerButtons controllerButtons = new ControllerButtons(mapping);
 
@@ -93,7 +107,6 @@ public class ControllerButtons {
     }
 
     public ControllerButtons getControllerButtons(int controllerIndex, @NonNull Mapping mapping) {
-        Validate.notNull(mapping);
 
         if(this.mapping != mapping) {
             this.mapping = mapping;

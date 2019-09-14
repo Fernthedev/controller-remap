@@ -1,9 +1,8 @@
-package com.github.fernthedev.controllerremapmod.mappings;
+package com.github.fernthedev.controllerremapmod.joystick.mappings;
 
-import com.github.fernthedev.controllerremapmod.core.ControllerHandler;
-import com.github.fernthedev.controllerremapmod.mappings.gson.GsonAxeMapping;
-import com.github.fernthedev.controllerremapmod.mappings.gson.GsonButtonMapping;
-import com.github.fernthedev.controllerremapmod.mappings.gson.GsonMapping;
+import com.github.fernthedev.controllerremapmod.joystick.mappings.gson.GsonAxeMapping;
+import com.github.fernthedev.controllerremapmod.joystick.mappings.gson.GsonButtonMapping;
+import com.github.fernthedev.controllerremapmod.joystick.mappings.gson.GsonMapping;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.Data;
@@ -23,22 +22,13 @@ public abstract class Mapping {
     protected GsonAxeMapping axesMapping;
     protected String name = "UnknownMapping";
 
-    protected Mapping(ButtonMapping buttonMapping,AxesMapping axesMapping,String name) {
+    protected Mapping(ButtonMapping buttonMapping, AxesMapping axesMapping, String name) {
         this.buttonMapping = buttonMapping.toGson();
         this.axesMapping = axesMapping.toGson();
         this.name = name;
     }
 
     protected Mapping() {}
-
-    /**
-     * Loads an instance of mapping from a file in mappings folder
-     * @param fileName The file in mappings folder
-     * @return Controller mapping
-     */
-    public static GsonMapping loadFromFolder(String fileName) {
-        return loadFromFile(new File(new File(ControllerHandler.getHandler().getConfigDir().toFile(),"mappings"),fileName + ".mapping"));
-    }
 
     public static GsonMapping loadFromFile(File file) {
         StringBuilder json = new StringBuilder();

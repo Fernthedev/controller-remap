@@ -4,12 +4,12 @@ import com.github.fernthedev.controllerremapmod.config.IConfigHandler;
 import com.github.fernthedev.controllerremapmod.config.ISettingsConfig;
 import com.github.fernthedev.controllerremapmod.config.MappingConfig;
 import com.github.fernthedev.controllerremapmod.config.ui.IConfigGUI;
-import com.github.fernthedev.controllerremapmod.core.joystick.ControllerAxis;
-import com.github.fernthedev.controllerremapmod.core.joystick.ControllerButtonState;
-import com.github.fernthedev.controllerremapmod.core.joystick.ControllerButtons;
-import com.github.fernthedev.controllerremapmod.core.joystick.JoystickController;
-import com.github.fernthedev.controllerremapmod.mappings.ps4.DS4Mapping;
-import com.github.fernthedev.controllerremapmod.mappings.xbox.XboxOneMapping;
+import com.github.fernthedev.controllerremapmod.joystick.ControllerAxis;
+import com.github.fernthedev.controllerremapmod.joystick.ControllerButtonState;
+import com.github.fernthedev.controllerremapmod.joystick.ControllerButtons;
+import com.github.fernthedev.controllerremapmod.joystick.JoystickController;
+import com.github.fernthedev.controllerremapmod.joystick.mappings.ps4.DS4Mapping;
+import com.github.fernthedev.controllerremapmod.joystick.mappings.xbox.XboxOneMapping;
 import lombok.Getter;
 import net.minecraft.util.MovementInput;
 import org.apache.logging.log4j.Logger;
@@ -45,7 +45,7 @@ public class ControllerHandler {
     public void init() {
         handler.getLogger().debug("The controller mapping is " + configHandler.getSettings());
 
-        controller = new JoystickController(0, configHandler.getSettings().getSelectedMapping().getMapping());
+        controller = new JoystickController(GLFW_JOYSTICK_1, configHandler.getSettings().getSelectedMapping().getMapping());
     }
 
     public static void createMappingTemplates(File dir) {
@@ -56,6 +56,7 @@ public class ControllerHandler {
         File mapFile = new File(dir, "template.mapping");
 
         MappingConfig mappingConfig = new MappingConfig(mapFile,new XboxOneMapping());
+        mappingConfig.getMapping().setName("template");
         mappingConfig.load();
         ///////////////////////////////////////////
         mapFile = new File(dir, "xboxone.mapping");
