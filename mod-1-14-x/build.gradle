@@ -12,7 +12,7 @@ apply plugin: 'java'
 apply plugin: 'net.minecraftforge.gradle'
 
 
-archivesBaseName = 'controller-remap'
+archivesBaseName = 'controllerremap'
 version = "1.14.4-${modVersion}"
 
 minecraft {
@@ -21,7 +21,7 @@ minecraft {
     // stable_#            Stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not always work.
     // Simply re-run your setup task after changing the mappings to update your workspace.
-    mappings channel: 'snapshot', version: '20190719-1.14.3'
+    mappings channel: 'snapshot', version: '20190807-1.14.3'
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
@@ -70,7 +70,7 @@ minecraft {
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
-            args '--mod', 'controller-remap', '--all', '--output', file('src/generated/resources/')
+            args '--mod', 'controllerremap', '--all', '--output', file('src/generated/resources/')
 
             mods {
                 controllerremap {
@@ -91,7 +91,7 @@ configurations {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.14.4-28.0.1'
+    minecraft 'net.minecraftforge:forge:1.14.4-28.1.0'
     // These dependencies get remapped to your current MCP mappings
     // deobf 'com.mod-buildcraft:buildcraft:6.0.8:dev'
 
@@ -106,9 +106,9 @@ dependencies {
 jar {
     manifest {
         attributes([
-                "Specification-Title": "controller-remap",
+                "Specification-Title": "controllerremap",
                 "Specification-Vendor": "Fernthedev",
-                "Specification-Version": "${modVersion}", // We are version 1 of ourselves
+                "Specification-Version": "1", // We are version 1 of ourselves
                 "Implementation-Title": project.name,
                 "Implementation-Version": "${version}",
                 "Implementation-Vendor" :"Fernthedev",
