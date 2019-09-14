@@ -1,6 +1,6 @@
-package com.github.fernthedev.controllerremapmod.core.joystick;
+package com.github.fernthedev.controllerremapmod.joystick;
 
-import com.github.fernthedev.controllerremapmod.mappings.Mapping;
+import com.github.fernthedev.controllerremapmod.joystick.mappings.Mapping;
 import lombok.Data;
 import lombok.NonNull;
 
@@ -13,6 +13,9 @@ import static org.lwjgl.glfw.GLFW.glfwGetJoystickAxes;
 //@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ControllerAxis {
 
+    /**
+     * Mapping to use
+     */
     @NonNull
     private Mapping mapping;
 
@@ -57,6 +60,9 @@ public class ControllerAxis {
     private ControllerAxisState RIGHT_TRIGGER;
 
 
+    /**
+     * Called on constructor
+     */
     private void build() {
         HORIZONTAL_LEFT_STICKER = new ControllerAxisState(mapping.getAxesMapping().getHORIZONTAL_LEFT_STICKER());
         VERTICAL_LEFT_STICKER = new ControllerAxisState(mapping.getAxesMapping().getVERTICAL_LEFT_STICKER());
@@ -66,16 +72,28 @@ public class ControllerAxis {
         RIGHT_TRIGGER = new ControllerAxisState(mapping.getAxesMapping().getRIGHT_TRIGGER());
     }
 
+    public static ControllerAxis buildAxis(int controllerIndex, @NonNull Mapping mapping) {
+        ControllerAxis controllerAxis = new ControllerAxis(mapping);
+
+
+        controllerAxis.build();
+        
+        return controllerAxis.getAxis(controllerIndex, mapping);
+    }
+    
     /**
      * Gets an instance of {@link ControllerAxis} for the controller specified
      * @param controllerIndex The controller
-     * @param mapping
+     * @param mapping The mapping
      * @return The instance of {@link ControllerAxis}
      */
-    public static ControllerAxis getAxis(int controllerIndex, @NonNull Mapping mapping) {
-        ControllerAxis controllerAxis = new ControllerAxis(mapping);
-        controllerAxis.build();
-
+    public ControllerAxis getAxis(int controllerIndex, @NonNull Mapping mapping) {
+        if(this.mapping != mapping) {
+            this.mapping = mapping;
+            
+            remap();
+        }
+        
         FloatBuffer axes = glfwGetJoystickAxes(controllerIndex);
 
         int axisID = 1;
@@ -84,16 +102,28 @@ public class ControllerAxis {
 
             int id = axisID - 1;
 
-            if(id == controllerAxis.HORIZONTAL_LEFT_STICKER.getButtonIndex()) controllerAxis.HORIZONTAL_LEFT_STICKER.setValue(state);
-            if(id == controllerAxis.VERTICAL_LEFT_STICKER.getButtonIndex()) controllerAxis.VERTICAL_LEFT_STICKER.setValue(state);
-            if(id == controllerAxis.VERTICAL_RIGHT_STICKER.getButtonIndex()) controllerAxis.VERTICAL_RIGHT_STICKER.setValue(state);
-            if(id == controllerAxis.HORIZONTAL_RIGHT_STICKER.getButtonIndex()) controllerAxis.HORIZONTAL_RIGHT_STICKER.setValue(state);
-            if(id == controllerAxis.LEFT_TRIGGER.getButtonIndex()) controllerAxis.LEFT_TRIGGER.setValue(state);
-            if(id == controllerAxis.RIGHT_TRIGGER.getButtonIndex()) controllerAxis.RIGHT_TRIGGER.setValue(state);
+            if(id == HORIZONTAL_LEFT_STICKER.getButtonIndex()) HORIZONTAL_LEFT_STICKER.setValue(state);
+            if(id == VERTICAL_LEFT_STICKER.getButtonIndex()) VERTICAL_LEFT_STICKER.setValue(state);
+            if(id == VERTICAL_RIGHT_STICKER.getButtonIndex()) VERTICAL_RIGHT_STICKER.setValue(state);
+            if(id == HORIZONTAL_RIGHT_STICKER.getButtonIndex()) HORIZONTAL_RIGHT_STICKER.setValue(state);
+            if(id == LEFT_TRIGGER.getButtonIndex()) LEFT_TRIGGER.setValue(state);
+            if(id == RIGHT_TRIGGER.getButtonIndex()) RIGHT_TRIGGER.setValue(state);
 
             axisID++;
         }
-        return controllerAxis;
+        return this;
+    }
+
+    /**
+     * Remaps the axes
+     */
+    private void remap() {
+        HORIZONTAL_LEFT_STICKER.setButtonIndex(mapping.getAxesMapping().getHORIZONTAL_LEFT_STICKER());
+        VERTICAL_LEFT_STICKER.setButtonIndex(mapping.getAxesMapping().getVERTICAL_LEFT_STICKER());
+        VERTICAL_RIGHT_STICKER.setButtonIndex(mapping.getAxesMapping().getVERTICAL_RIGHT_STICKER());
+        HORIZONTAL_RIGHT_STICKER.setButtonIndex(mapping.getAxesMapping().getHORIZONTAL_RIGHT_STICKER());
+        LEFT_TRIGGER.setButtonIndex(mapping.getAxesMapping().getLEFT_TRIGGER());
+        RIGHT_TRIGGER.setButtonIndex(mapping.getAxesMapping().getRIGHT_TRIGGER());
     }
 
     /**
@@ -109,8 +139,7 @@ public class ControllerAxis {
                 controllerAxis.VERTICAL_RIGHT_STICKER.equals(VERTICAL_RIGHT_STICKER) &&
 
                 controllerAxis.HORIZONTAL_LEFT_STICKER.equals(HORIZONTAL_LEFT_STICKER) &&
-                controllerAxis.HORIZONTAL_RIGHT_STICKER.equals(HORIZONTAL_RIGHT_STICKER)
-                ;
+                controllerAxis.HORIZONTAL_RIGHT_STICKER.equals(HORIZONTAL_RIGHT_STICKER);
     }
 
     public void printDifferent(ControllerAxis controllerAxis) {

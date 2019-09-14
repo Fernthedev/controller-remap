@@ -59,11 +59,16 @@ public class ConfigGUI extends Screen implements IConfigGUI {
     @Override
     protected void init() {
         // Load settings
+
         ISettingsConfig settings = ControllerHandler.getConfigHandler().getSettings();
         settings.sync();
 
-        int scaledHeight = height / 4 + 48;
-        maxY = scaledHeight + (- 28);
+//        int scaledHeight = height / 4 + 48;
+        int scaledHeight = height / 6 + 72 - 6;
+
+        maxY = scaledHeight; //+ (- 28);
+
+
 
 
         // Attack timer ticks

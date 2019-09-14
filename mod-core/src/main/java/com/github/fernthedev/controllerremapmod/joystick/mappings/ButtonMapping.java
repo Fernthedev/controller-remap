@@ -1,6 +1,6 @@
-package com.github.fernthedev.controllerremapmod.mappings;
+package com.github.fernthedev.controllerremapmod.joystick.mappings;
 
-import com.github.fernthedev.controllerremapmod.mappings.gson.GsonButtonMapping;
+import com.github.fernthedev.controllerremapmod.joystick.mappings.gson.GsonButtonMapping;
 import com.google.gson.Gson;
 
 public interface ButtonMapping {

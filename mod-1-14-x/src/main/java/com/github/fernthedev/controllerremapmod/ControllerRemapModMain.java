@@ -43,7 +43,7 @@ public class ControllerRemapModMain implements IHandler {
 
     private ConfigHandler configHandler;
 
-    static final String MODID = "controller-remap";
+    static final String MODID = "controllerremap";
 
     private static Class<? extends Minecraft> minecraftClass;
 

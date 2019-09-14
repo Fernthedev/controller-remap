@@ -1,6 +1,6 @@
-package com.github.fernthedev.controllerremapmod.mappings.ps4;
+package com.github.fernthedev.controllerremapmod.joystick.mappings.ps4;
 
-import com.github.fernthedev.controllerremapmod.mappings.Mapping;
+import com.github.fernthedev.controllerremapmod.joystick.mappings.Mapping;
 import lombok.Getter;
 
 @Getter
