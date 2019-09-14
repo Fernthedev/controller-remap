@@ -59,10 +59,16 @@ public class JoystickController {
         }
     }
 
+    private ControllerButtons controllerButtons;
+
     public ControllerButtons getButtons() {
         validateConnected();
 
-        return ControllerButtons.getControllerButtons(controllerIndex,mapping);
+        if(controllerButtons == null) {
+            controllerButtons = ControllerButtons.buildControllerButtons(controllerIndex, mapping);
+        }
+
+        return controllerButtons.getControllerButtons(controllerIndex,mapping);
     }
 
     public ControllerAxis getAxes() {

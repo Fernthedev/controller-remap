@@ -6,6 +6,29 @@ import lombok.*;
 @Setter
 @RequiredArgsConstructor
 public class ControllerButtonState {
-    private boolean state;
-    private final int buttonIndex;
+    @Setter(AccessLevel.NONE)
+    private boolean isHeld;
+
+    void setHeld(boolean held) {
+        if(held != this.isHeld) {
+            pressed = 0;
+        }
+        this.isHeld = held;
+    }
+
+    @NonNull
+    @Setter(AccessLevel.MODULE)
+    private int buttonIndex;
+
+    @Getter(AccessLevel.NONE)
+    private int pressed = 0;
+
+    public boolean isPressed() {
+        if(pressed == 0 && isHeld) {
+            pressed--;
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
