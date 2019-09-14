@@ -121,7 +121,6 @@ public class ControllerHandler {
         }
 
         boolean leftClickPress = leftClickPressTimeHeld == 0;
-        boolean shiftPress = false;
 
         if(!handler.isGuiOpen()) {
 
@@ -133,20 +132,20 @@ public class ControllerHandler {
             if (deadzone(controller.getAxes().getHORIZONTAL_LEFT_STICKER().getValue(), leftDeadzone))
                 event.moveStrafe = -1 * controller.getAxes().getHORIZONTAL_LEFT_STICKER().getValue();
 
-            if (controller.getButtons().getA().isState()) {
-                event.jump = controller.getButtons().getA().isState();
+            if (controller.getButtons().getA().isHeld()) {
+                event.jump = controller.getButtons().getA().isHeld();
             }
 
             if(player.isFlying() || player.isSwimming()) {
-                if(controller.getButtons().getRIGHT_STICKER().isState()) {
-                    event.sneak = controller.getButtons().getRIGHT_STICKER().isState();
+                if(controller.getButtons().getRIGHT_STICKER().isHeld()) {
+                    event.sneak = controller.getButtons().getRIGHT_STICKER().isHeld();
                 }
             }else{
-                if(controller.getButtons().getDPAD_RIGHT().isState()) {
+                if(controller.getButtons().getDPAD_RIGHT().isPressed()) {
                     sprintToggle = !sprintToggle;
                 }
 
-                if (controller.getButtons().getRIGHT_STICKER().isState()) {
+                if (controller.getButtons().getRIGHT_STICKER().isPressed()) {
 
                     if (!sneakToggleButton) {
                         sneakToggleButton = true;
@@ -259,21 +258,21 @@ public class ControllerHandler {
 //                scrollTime = 0;
 //            }
 
-            if(controller.getButtons().getBUMPER_RIGHT().isState() ) {
+            if(controller.getButtons().getBUMPER_RIGHT().isHeld() ) {
                 if(scrollTime == 0 || scrollTime > maxScrollTime) {
                     player.scrollSlot(-1);
                 }
                 scrollTime++;
             }
 
-            if(controller.getButtons().getBUMPER_LEFT().isState() ) {
+            if(controller.getButtons().getBUMPER_LEFT().isHeld() ) {
                 if(scrollTime == 0 || scrollTime > maxScrollTime) {
                     player.scrollSlot(1);
                 }
                 scrollTime++;
             }
 
-            if(!controller.getButtons().getBUMPER_RIGHT().isState() && !controller.getButtons().getBUMPER_LEFT().isState()) {
+            if(!controller.getButtons().getBUMPER_RIGHT().isHeld() && !controller.getButtons().getBUMPER_LEFT().isHeld()) {
                 scrollTime = 0;
             }
 
@@ -292,7 +291,7 @@ public class ControllerHandler {
 
 
 
-        if(isPressed(controller.getButtons().getY(), oldMoveButtons.getY())) {
+        if(controller.getButtons().getY().isPressed()) {
             boolean opened = handler.isInventory();
 
             if(!opened) {
@@ -304,7 +303,7 @@ public class ControllerHandler {
 
 
         //Basically does what TAB would do
-        if(checkToggle(controller.getButtons().getEXTRA_BUTTON(),oldMoveButtons.getEXTRA_BUTTON()) && !handler.isGuiOpen()) {
+        if(controller.getButtons().getEXTRA_BUTTON().isPressed()) {
             renderPlayerList = !renderPlayerList;
         }
 
@@ -316,37 +315,28 @@ public class ControllerHandler {
 
 
         //Basically does (Minecraft.getMinecraft().displayGuiScreen(new GuiChat());)
-        if(controller.getButtons().getDPAD_UP().isState()) {
-            if(!toggleChatButton) {
-                toggleChatButton = true;
-                handler.displayChat();
-            }
-        }else{
-            toggleChatButton = false;
+        if(controller.getButtons().getDPAD_UP().isPressed()) {
+            toggleChatButton = true;
+            handler.displayChat();
         }
 
         //Basically does (Minecraft.getMinecraft().displayGuiScreen(new GuiChat());)
-        if(controller.getButtons().getDPAD_DOWN().isState() && !(handler.getGui() instanceof IConfigGUI)) {
+        if(controller.getButtons().getDPAD_DOWN().isPressed() && !(handler.getGui() instanceof IConfigGUI)) {
             handler.displayOptions();
         }
 
-        if(controller.getButtons().getLEFT_STICKER().isState()) {
-            if(!toggle3rdPersonButton) {
-                toggle3rdPersonButton = true;
-                //Basically Minecraft.getInstance().gameSettings.thirdPersonView++;
-                handler.toggle3rdPerson();
-            }
-        }else{
-            toggle3rdPersonButton = false;
+        if(controller.getButtons().getLEFT_STICKER().isPressed()) {
+            //Basically Minecraft.getInstance().gameSettings.thirdPersonView++;
+            handler.toggle3rdPerson();
         }
 
         boolean resetDropTime = true;
 
         //////////////////////////////////////////////
         // Drops item
-        if(!handler.isGuiOpen()) {
+        if(!handler.isGuiOpen() && !bHeldToClose) {
 
-            if (controller.getButtons().getB().isState() && !bHeldToClose) {
+            if (controller.getButtons().getB().isHeld()) {
 
                 if(dropTime == 0) {
                     player.dropItem();
@@ -495,15 +485,15 @@ public class ControllerHandler {
             oldButtons = controller.getButtons();
         }
 
-        if(controller.getButtons().getSTART_BUTTON().isState()) {
-            if(!toggleMenuButton) {
-                toggleMenuButton = true;
+        if(controller.getButtons().getSTART_BUTTON().isPressed()) {
+//            if(!toggleMenuButton) {
+//                toggleMenuButton = true;
                 if (handler.isGuiOpen()) {
                     handler.closeGUI();
                 } else {
                     handler.openMainMenu();
                 }
-            }
+//            }
             //Would execute what Escape does
         }else{
             toggleMenuButton = false;
@@ -511,17 +501,19 @@ public class ControllerHandler {
 
 
 
-        boolean shouldResetToClose = !handler.isGuiOpen() && !controller.getButtons().getB().isState() && bHeldToClose;
+//        boolean shouldResetToClose = !handler.isGuiOpen() && !controller.getButtons().getB().isHeld() && bHeldToClose;
+//
+//        if(shouldResetToClose) bHeldToClose = false;
 
-        if(shouldResetToClose) bHeldToClose = false;
-
-        if(handler.isGuiOpen()) {
+        if(controller.getButtons().getB().isPressed() && handler.isGuiOpen()) {
             //Closes GUI
-            if (controller.getButtons().getB().isState()) {
+//            if (controller.getButtons().getB().isHeld()) {
                 bHeldToClose = true;
                 handler.closeGUI();
-            }
+//            }
         }
+
+        if (!controller.getButtons().getB().isHeld()) bHeldToClose = false;
 
 
 
@@ -607,9 +599,9 @@ public class ControllerHandler {
 
         if(handler.isGuiOpen()) {
             /////////////////////////
-            if(!controller.getButtons().getA().isState()) aHeldToClick = false;
+            if(!controller.getButtons().getA().isHeld()) aHeldToClick = false;
 
-            if(controller.getButtons().getA().isState() && !aHeldToClick) {
+            if(controller.getButtons().getA().isPressed()) {
                 aHeldToClick = true;
                 double xScale = handler.getMouseX() * (double)handler.getMainWindow().getScaledWidth() / (double)handler.getMainWindow().getWidth();
                 double yScale = handler.getMouseY() * (double) handler.getMainWindow().getScaledHeight() / (double)handler.getMainWindow().getHeight();
@@ -620,11 +612,11 @@ public class ControllerHandler {
             ///////////////////////////////////////////
 
             if(handler.isInventory()) {
-                if (!controller.getButtons().getY().isState()) {
-                    quickMoveToClick = false;
-                }
+//                if (!controller.getButtons().getY().isHeld()) {
+//                    quickMoveToClick = false;
+//                }
 
-                if (controller.getButtons().getY().isState() && !quickMoveToClick) {
+                if (controller.getButtons().getY().isPressed()) {
                     quickMoveToClick = true;
 
 
@@ -659,12 +651,14 @@ public class ControllerHandler {
 
 
 
+    @Deprecated
     private boolean checkToggle(ControllerButtonState newButton, ControllerButtonState oldState) {
-        return newButton.isState() != oldState.isState();
+        return newButton.isHeld() != oldState.isHeld();
     }
 
+    @Deprecated
     private boolean isPressed(ControllerButtonState newButton, ControllerButtonState oldState) {
-        return newButton.isState() != oldState.isState() && oldState.isState();
+        return newButton.isHeld() != oldState.isHeld() && oldState.isHeld();
     }
 
     private boolean deadzone(float value, float amount) {
