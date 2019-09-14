@@ -2,6 +2,9 @@
 
 This is a mod for Minecraft Java Edition that allows you to use a PS4 or Xbox One controller or even a custom controller with [custom mappings!](#mappings)
 
+Since version 1.3 I have decoupled the joystick controller classes and their API into their own project in which you can use.
+The project can [be found here](https://github.com/Fernthedev/controller-wrapper)
+
 ## Download
 
 
