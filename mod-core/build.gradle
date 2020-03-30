@@ -92,7 +92,7 @@ repositories {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.14.4-28.1.0'
     compileOnly "org.lwjgl:lwjgl-glfw:$lwjglVersion"
-    compileOnly group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+    compileOnly group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
 //    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
 
     compile group: 'com.squareup.okio', name: 'okio', version: '2.2.2'
