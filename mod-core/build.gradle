@@ -90,7 +90,7 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.14.4-28.1.0'
+    minecraft 'net.minecraftforge:forge:1.16.5-36.1.18'
     compileOnly "org.lwjgl:lwjgl-glfw:$lwjglVersion"
     compileOnly group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
 //    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
